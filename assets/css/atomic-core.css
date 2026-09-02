@@ -1,165 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
 :root {
-  --nandark-primary: #0f172a;
-  --nandark-primary-hover: #1e293b;
-  --nandark-accent: #0284c7;
-  --nandark-accent-hover: #0369a1;
-  --nandark-whatsapp: #16a34a;
-  --nandark-whatsapp-hover: #15803d;
-  --nandark-bg: #ffffff;
-  --nandark-bg-subtle: #f8fafc;
-  --nandark-text: #334155;
-  --nandark-text-heading: #0f172a;
-  --nandark-border: #e2e8f0;
-  --nandark-radius-sm: 6px;
-  --nandark-radius-md: 10px;
-  --nandark-radius-full: 9999px;
-  --nandark-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --origen-bg: #070a12;
+  --origen-card-bg: rgba(12, 17, 31, 0.78);
+  --origen-card-border: rgba(251, 191, 36, 0.22);
+  --origen-gold-primary: #f59e0b;
+  --origen-gold-light: #fbbf24;
+  --origen-gold-glow: rgba(245, 158, 11, 0.35);
+  --origen-whatsapp: #10b981;
+  --origen-whatsapp-hover: #059669;
+  --origen-text-main: #ffffff;
+  --origen-text-muted: #94a3b8;
+  --origen-font-serif: "Playfair Display", Georgia, serif;
+  --origen-font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Reset y Ocultar Header genérico de WordPress en la landing */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--origen-bg) !important;
+  color: var(--origen-text-main);
+  font-family: var(--origen-font-sans);
+  overflow-x: hidden;
+}
+
+#header, #footer, #headerimg,
+header.wp-block-template-part,
+.site-header,
+.wp-site-blocks > header:first-child {
+  display: none !important;
+}
+
+#page {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100% !important;
 }
 
 .nandark-container {
   width: 100%;
-  max-width: 1140px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
 }
 
-/* Átomos: Botones */
-.nandark-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-family: var(--nandark-font-sans);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: var(--nandark-radius-md);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border: 1px solid transparent;
+/* 🍸 FLOATING LUXURY NAVBAR */
+.origen-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  padding: 1.5rem 0;
+  background: linear-gradient(180deg, rgba(7, 10, 18, 0.85) 0%, rgba(7, 10, 18, 0) 100%);
+  backdrop-filter: blur(8px);
 }
-
-.nandark-btn--primary {
-  background-color: var(--nandark-primary);
-  color: #ffffff !important;
-}
-.nandark-btn--primary:hover {
-  background-color: var(--nandark-primary-hover);
-}
-
-.nandark-btn--secondary {
-  background-color: transparent;
-  color: var(--nandark-primary) !important;
-  border-color: var(--nandark-border);
-}
-.nandark-btn--secondary:hover {
-  background-color: var(--nandark-bg-subtle);
-}
-
-.nandark-btn--whatsapp {
-  background-color: var(--nandark-whatsapp);
-  color: #ffffff !important;
-}
-.nandark-btn--whatsapp:hover {
-  background-color: var(--nandark-whatsapp-hover);
-}
-
-/* Átomos: Badges */
-.nandark-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  font-family: var(--nandark-font-sans);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: var(--nandark-radius-full);
-}
-
-.nandark-badge--accent {
-  background-color: #e0f2fe;
-  color: #0369a1;
-}
-
-.nandark-badge--neutral {
-  background-color: #f1f5f9;
-  color: #475569;
-}
-
-/* Moléculas: Cards */
-.nandark-card {
-  background: #ffffff;
-  border: 1px solid var(--nandark-border);
-  border-radius: var(--nandark-radius-md);
-  padding: 1.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.nandark-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-}
-.nandark-card__title a {
-  color: var(--nandark-text-heading);
-  text-decoration: none;
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-.nandark-card__excerpt {
-  color: var(--nandark-text);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0.75rem 0 1.25rem;
-}
-
-/* Organismos: Hero */
-.nandark-hero {
-  padding: 5rem 0;
-  background: var(--nandark-bg-subtle);
-  border-bottom: 1px solid var(--nandark-border);
-}
-.nandark-hero__title {
-  font-size: 2.75rem;
-  font-weight: 800;
-  color: var(--nandark-text-heading);
-  line-height: 1.15;
-  margin: 1rem 0;
-}
-.nandark-hero__desc {
-  font-size: 1.15rem;
-  color: var(--nandark-text);
-  max-width: 600px;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-}
-.nandark-hero__actions {
+.origen-nav__container {
   display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.origen-nav__logo {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+.origen-nav__logo span {
+  font-family: var(--origen-font-serif);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ffffff 40%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.origen-nav__logo small {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--origen-gold-light);
+  font-weight: 600;
+}
+.origen-nav__links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+.origen-nav__links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+.origen-nav__links a:hover {
+  color: var(--origen-gold-light);
+}
+.origen-nav__btn {
+  padding: 0.55rem 1.25rem !important;
+  border: 1px solid var(--origen-gold-primary) !important;
+  border-radius: 9999px;
+  color: var(--origen-gold-light) !important;
+  font-weight: 600 !important;
+  transition: all 0.25s ease !important;
+}
+.origen-nav__btn:hover {
+  background: var(--origen-gold-primary);
+  color: #070a12 !important;
+  box-shadow: 0 0 15px var(--origen-gold-glow);
 }
 
-/* Templates */
-.nandark-service-single {
-  padding: 3rem 0;
-}
-.nandark-service-title {
-  font-size: 2.25rem;
-  margin: 0.5rem 0 1.5rem;
-  color: var(--nandark-text-heading);
-}
-.nandark-service-cta-box {
-  margin-top: 3rem;
-  padding: 2rem;
-  background: var(--nandark-bg-subtle);
-  border: 1px solid var(--nandark-border);
-  border-radius: var(--nandark-radius-md);
-  text-align: center;
-}
-
-/* Scrollytelling Section */
+/* 🎬 SCROLLYTELLING CONTAINER */
 .scrolly-section {
   position: relative;
   height: 350vh;
-  background-color: #0b0f19;
+  background-color: var(--origen-bg);
 }
 .scrolly-sticky {
   position: sticky;
@@ -169,7 +126,6 @@
   overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 .scrolly-canvas {
   position: absolute;
@@ -186,24 +142,26 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 30% 50%, rgba(11, 15, 25, 0.4), rgba(7, 10, 16, 0.85));
+  background: radial-gradient(circle at 25% 50%, rgba(7, 10, 18, 0.4) 0%, rgba(7, 10, 18, 0.88) 100%);
   z-index: 2;
   pointer-events: none;
 }
 .scrolly-ui-container {
   position: relative;
-  z-index: 3;
-  width: 100%;
+  z-index: 10;
 }
+
+/* ✨ LUXURY GLASSMORPHIC CARDS */
 .scrolly-step {
   position: absolute;
   top: 50%;
-  left: 1.5rem;
-  transform: translateY(-50%) translateY(20px);
-  max-width: 620px;
+  left: 2rem;
+  transform: translateY(-50%) translateY(30px);
+  width: 100%;
+  max-width: 540px;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s ease;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
 .scrolly-step.is-active {
@@ -212,205 +170,252 @@
   transform: translateY(-50%) translateY(0);
   pointer-events: auto;
 }
-.scrolly-title {
-  font-size: 3.5rem;
-  font-weight: 900;
-  color: #ffffff;
+
+.scrolly-card {
+  background: var(--origen-card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--origen-card-border);
+  border-radius: 20px;
+  padding: 2.75rem 2.5rem;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.85), 0 0 40px -15px var(--origen-gold-glow);
+}
+
+.scrolly-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+.scrolly-num {
+  font-family: var(--origen-font-sans);
+  font-size: 0.9rem;
+  font-weight: 800;
   letter-spacing: 0.1em;
-  margin: 0.75rem 0 0.5rem;
+  color: var(--origen-gold-light);
+}
+.scrolly-num i {
+  font-style: normal;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.scrolly-badge {
+  display: inline-block;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-radius: 9999px;
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--origen-gold-light);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+.scrolly-badge--gold {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.15));
+  border-color: var(--origen-gold-primary);
+}
+
+.scrolly-title {
+  font-family: var(--origen-font-serif);
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   line-height: 1.1;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  margin: 0.5rem 0 0.25rem;
+  color: #ffffff;
 }
 .scrolly-subtitle {
-  font-size: 1.35rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #38bdf8;
-  margin-bottom: 1rem;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  color: var(--origen-gold-light);
+  letter-spacing: 0.05em;
+  margin-bottom: 1.25rem;
+}
+.scrolly-divider {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--origen-gold-primary), transparent);
+  margin-bottom: 1.25rem;
 }
 .scrolly-desc {
-  font-size: 1.15rem;
-  color: #e2e8f0;
+  font-size: 1rem;
   line-height: 1.7;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  color: var(--origen-text-muted);
+  margin: 0;
 }
+
 .scrolly-indicator {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-top: 2rem;
-  color: #94a3b8;
-  font-size: 0.85rem;
+  color: #64748b;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
 }
 .scrolly-mouse {
-  width: 20px;
-  height: 32px;
-  border: 2px solid #94a3b8;
-  border-radius: 12px;
+  width: 18px;
+  height: 28px;
+  border: 2px solid #64748b;
+  border-radius: 10px;
   display: flex;
   justify-content: center;
   padding-top: 4px;
 }
 .scrolly-wheel {
   width: 3px;
-  height: 6px;
-  background: #38bdf8;
+  height: 5px;
+  background: var(--origen-gold-light);
   border-radius: 2px;
   animation: scrolly-bounce 1.5s infinite;
 }
 @keyframes scrolly-bounce {
   0%, 100% { transform: translateY(0); opacity: 1; }
-  50% { transform: translateY(8px); opacity: 0.3; }
+  50% { transform: translateY(6px); opacity: 0.2; }
 }
 
-/* Origen Gastrobar Home Page */
-.origen-hero {
-  background-size: cover;
-  background-position: center;
-  color: #ffffff;
-  padding: 8rem 0;
-  display: flex;
+/* 🌟 BOTÓN CTA DE LUJO */
+.origen-btn-cta {
+  display: inline-flex;
   align-items: center;
-  min-height: 80vh;
-}
-.origen-hero__content {
-  max-width: 680px;
-}
-.origen-hero__title {
-  font-size: 4rem;
-  font-weight: 900;
-  letter-spacing: 0.15em;
-  color: #ffffff;
-  margin: 1rem 0 0.5rem;
-  line-height: 1;
-}
-.origen-hero__subtitle {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: #38bdf8;
-  margin-bottom: 1.25rem;
-}
-.origen-hero__desc {
-  font-size: 1.15rem;
-  line-height: 1.7;
-  color: #cbd5e1;
-  margin-bottom: 2.5rem;
-}
-.origen-hero__actions {
-  display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-}
-.origen-hero .nandark-btn--secondary {
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1.1rem 2rem;
+  margin-top: 1.75rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
 }
-.origen-hero .nandark-btn--secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+.origen-btn-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+}
+.origen-btn-cta__icon {
+  font-size: 1.25rem;
 }
 
+/* 🍽️ EXPERIENCIAS GRID */
 .origen-section {
-  padding: 6rem 0;
-  background-color: #0b0f19;
-  color: #ffffff;
+  padding: 7rem 0;
+  background-color: var(--origen-bg);
+  position: relative;
+  z-index: 10;
 }
 .origen-section-header {
   text-align: center;
   max-width: 600px;
-  margin: 0 auto 4rem;
+  margin: 0 auto 4.5rem;
 }
 .origen-section-title {
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-family: var(--origen-font-serif);
+  font-size: 2.75rem;
+  font-weight: 700;
   color: #ffffff;
-  margin: 1rem 0 0.5rem;
+  margin: 1rem 0 0.75rem;
 }
 .origen-section-desc {
-  font-size: 1.1rem;
-  color: #94a3b8;
+  font-size: 1.05rem;
+  color: var(--origen-text-muted);
 }
 
 .origen-grid-3 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
+  gap: 2.5rem;
 }
 .origen-card {
-  background: #131b2e;
-  border: 1px solid #1e293b;
-  border-radius: var(--nandark-radius-md);
+  background: #0d121f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.4s ease;
 }
 .origen-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-  border-color: #0284c7;
+  transform: translateY(-8px);
+  border-color: var(--origen-card-border);
+  box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.7), 0 0 25px -5px var(--origen-gold-glow);
 }
 .origen-card__media {
   width: 100%;
-  height: 240px;
+  height: 250px;
   overflow: hidden;
 }
 .origen-card__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s ease;
 }
 .origen-card:hover .origen-card__media img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 .origen-card__body {
-  padding: 1.75rem;
+  padding: 2rem;
 }
 .origen-card__tag {
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #38bdf8;
-  letter-spacing: 0.1em;
+  color: var(--origen-gold-light);
+  letter-spacing: 0.12em;
 }
 .origen-card__title {
-  font-size: 1.4rem;
+  font-family: var(--origen-font-serif);
+  font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
   margin: 0.5rem 0 0.75rem;
 }
 .origen-card__text {
   font-size: 0.95rem;
-  color: #94a3b8;
-  line-height: 1.6;
+  color: var(--origen-text-muted);
+  line-height: 1.7;
   margin: 0;
 }
 
+/* 📲 STRIP DE RESERVA */
 .origen-booking-strip {
-  padding: 4rem 0;
-  background: #070a10;
-  border-top: 1px solid #1e293b;
+  padding: 5rem 0;
+  background: #05070d;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  z-index: 10;
 }
 .origen-booking-box {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-  border: 1px solid #334155;
-  border-radius: var(--nandark-radius-md);
-  padding: 3rem;
-  gap: 2rem;
+  background: linear-gradient(135deg, rgba(21, 29, 50, 0.6) 0%, rgba(10, 14, 26, 0.8) 100%);
+  border: 1px solid var(--origen-card-border);
+  border-radius: 20px;
+  padding: 3.5rem;
+  gap: 2.5rem;
   flex-wrap: wrap;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 .origen-booking-box__info h2 {
-  font-size: 1.85rem;
-  font-weight: 800;
+  font-family: var(--origen-font-serif);
+  font-size: 2.25rem;
+  font-weight: 700;
   color: #ffffff;
-  margin: 0 0 0.5rem;
+  margin: 0.75rem 0 0.5rem;
 }
 .origen-booking-box__info p {
-  color: #94a3b8;
+  color: var(--origen-text-muted);
   font-size: 1.05rem;
   margin: 0;
 }
-

@@ -1,6 +1,6 @@
 <?php
 /**
- * Plantilla Template: Page Home con Scrollytelling Cinemático (Origen Gastrobar)
+ * Plantilla Template: Page Home con Scrollytelling Cinemático & Diseño Editorial (Origen Gastrobar)
  */
 get_header();
 
@@ -10,6 +10,22 @@ $frames_url = NANDARK_ATOMIC_URL . 'assets/frames/';
 
 <main class="nandark-main nandark-home-page">
     
+    <!-- 🍸 FLOATING LUXURY NAVBAR -->
+    <header class="origen-nav">
+        <div class="nandark-container origen-nav__container">
+            <a href="/" class="origen-nav__logo">
+                <span>ORIGEN</span>
+                <small>GASTROBAR & LOUNGE</small>
+            </a>
+            <nav class="origen-nav__links">
+                <a href="#experiencias">Experiencias</a>
+                <a href="#menu">Platos</a>
+                <a href="#mixologia">Mixología</a>
+                <a href="#reservas" class="origen-nav__btn">Reservar Mesa</a>
+            </nav>
+        </div>
+    </header>
+
     <!-- 🎬 SCROLLYTELLING CANVAS EXPERIENCE (240 FRAMES) -->
     <section id="scrollytelling-container" class="scrolly-section" data-frames-url="<?php echo esc_url($frames_url); ?>">
         <div class="scrolly-sticky">
@@ -17,46 +33,73 @@ $frames_url = NANDARK_ATOMIC_URL . 'assets/frames/';
             <div class="scrolly-overlay"></div>
 
             <div class="nandark-container scrolly-ui-container">
+                
                 <!-- Paso 1: Salón Principal (0% a 25%) -->
                 <div class="scrolly-step is-active" data-start="0.0" data-end="0.25">
-                    <?php nandark_render('atoms/badge', ['text' => 'Experiencia Sensorial · Bogotá', 'tone' => 'accent']); ?>
-                    <h1 class="scrolly-title">ORIGEN</h1>
-                    <p class="scrolly-subtitle">Gastrobar de Autor, Mixología & Rooftop Lounge</p>
-                    <p class="scrolly-desc">Desliza hacia abajo para recorrer la experiencia gastronómica interactiva.</p>
-                    <div class="scrolly-indicator">
-                        <span>Scroll para explorar</span>
-                        <div class="scrolly-mouse"><div class="scrolly-wheel"></div></div>
+                    <div class="scrolly-card">
+                        <div class="scrolly-card__header">
+                            <span class="scrolly-badge">Experiencia Bogotá</span>
+                            <span class="scrolly-num">01 <i>/ 04</i></span>
+                        </div>
+                        <h1 class="scrolly-title">ORIGEN</h1>
+                        <p class="scrolly-subtitle">Gastrobar de Autor, Mixología & Rooftop Lounge</p>
+                        <div class="scrolly-divider"></div>
+                        <p class="scrolly-desc">Desliza hacia abajo para recorrer la experiencia gastronómica sensorial en tiempo real.</p>
+                        <div class="scrolly-indicator">
+                            <div class="scrolly-mouse"><div class="scrolly-wheel"></div></div>
+                            <span>Scroll para explorar</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Paso 2: Cocina & Platos (25% a 50%) -->
                 <div class="scrolly-step" data-start="0.25" data-end="0.50">
-                    <?php nandark_render('atoms/badge', ['text' => '01 · Vanguardia', 'tone' => 'neutral']); ?>
-                    <h2 class="scrolly-title">Platos de Autor</h2>
-                    <p class="scrolly-desc">Cortes madurados, reducciones artesanales de trufa y técnica molecular en cada creación.</p>
+                    <div class="scrolly-card">
+                        <div class="scrolly-card__header">
+                            <span class="scrolly-badge">Alta Cocina</span>
+                            <span class="scrolly-num">02 <i>/ 04</i></span>
+                        </div>
+                        <h2 class="scrolly-title">Platos de Autor</h2>
+                        <p class="scrolly-subtitle">Vanguardia & Sabores de Origen</p>
+                        <div class="scrolly-divider"></div>
+                        <p class="scrolly-desc">Cortes madurados, reducciones artesanales de trufa y técnica molecular en cada creación culinaria.</p>
+                    </div>
                 </div>
 
                 <!-- Paso 3: Coctelería & Bar (50% a 75%) -->
                 <div class="scrolly-step" data-start="0.50" data-end="0.75">
-                    <?php nandark_render('atoms/badge', ['text' => '02 · Mixología', 'tone' => 'accent']); ?>
-                    <h2 class="scrolly-title">Coctelería Botánica</h2>
-                    <p class="scrolly-desc">Destilados premium, infusiones ahumadas con romero y recetas exclusivas servidas sobre mármol negro.</p>
+                    <div class="scrolly-card">
+                        <div class="scrolly-card__header">
+                            <span class="scrolly-badge">Mixología</span>
+                            <span class="scrolly-num">03 <i>/ 04</i></span>
+                        </div>
+                        <h2 class="scrolly-title">Coctelería Botánica</h2>
+                        <p class="scrolly-subtitle">Destilados de Autor & Hielo Cristalino</p>
+                        <div class="scrolly-divider"></div>
+                        <p class="scrolly-desc">Destilados premium, infusiones ahumadas con romero y recetas exclusivas servidas sobre mármol negro.</p>
+                    </div>
                 </div>
 
                 <!-- Paso 4: Rooftop & Noches (75% a 1.0) -->
                 <div class="scrolly-step" data-start="0.75" data-end="1.0">
-                    <?php nandark_render('atoms/badge', ['text' => '03 · Atmósfera', 'tone' => 'neutral']); ?>
-                    <h2 class="scrolly-title">Rooftop Lounge</h2>
-                    <p class="scrolly-desc">Fogatas lineales, vista a la ciudad y el mejor ambiente nocturno para tus celebraciones.</p>
-                    <div class="scrolly-actions">
-                        <?php nandark_render('atoms/button', [
-                            'text'    => 'Reservar Mesa por WhatsApp',
-                            'url'     => 'https://wa.me/573000000000?text=' . urlencode('Hola Origen, quiero reservar una mesa.'),
-                            'variant' => 'whatsapp',
-                            'icon'    => '💬'
-                        ]); ?>
+                    <div class="scrolly-card scrolly-card--cta">
+                        <div class="scrolly-card__header">
+                            <span class="scrolly-badge scrolly-badge--gold">Noches Exclusivas</span>
+                            <span class="scrolly-num">04 <i>/ 04</i></span>
+                        </div>
+                        <h2 class="scrolly-title">Rooftop Lounge</h2>
+                        <p class="scrolly-subtitle">Fogatas Lineales & Vista Panorámica</p>
+                        <div class="scrolly-divider"></div>
+                        <p class="scrolly-desc">El mejor ambiente nocturno para tus celebraciones. Cupos limitados por turno.</p>
+                        <div class="scrolly-actions">
+                            <a href="https://wa.me/573000000000?text=Hola%20Origen%2C%20quiero%20reservar%20una%20mesa." class="origen-btn-cta" target="_blank" rel="noopener">
+                                <span class="origen-btn-cta__icon">💬</span>
+                                <span>Reservar Mesa por WhatsApp</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
@@ -65,7 +108,7 @@ $frames_url = NANDARK_ATOMIC_URL . 'assets/frames/';
     <section id="experiencias" class="origen-section">
         <div class="nandark-container">
             <div class="origen-section-header text-center">
-                <?php nandark_render('atoms/badge', ['text' => 'Nuestras Experiencias', 'tone' => 'neutral']); ?>
+                <span class="scrolly-badge">Carta y Espacios</span>
                 <h2 class="origen-section-title">El Arte de los Sentidos</h2>
                 <p class="origen-section-desc">Cada detalle está diseñado para transformar una cena en un recuerdo inolvidable.</p>
             </div>
@@ -108,20 +151,19 @@ $frames_url = NANDARK_ATOMIC_URL . 'assets/frames/';
     </section>
 
     <!-- Sección de Reserva Rápida / WhatsApp Directo -->
-    <section class="origen-booking-strip">
+    <section id="reservas" class="origen-booking-strip">
         <div class="nandark-container">
             <div class="origen-booking-box">
                 <div class="origen-booking-box__info">
+                    <span class="scrolly-badge scrolly-badge--gold">Atención Selecta</span>
                     <h2>¿Listo para vivir la experiencia Origen?</h2>
-                    <p>Atención de Miércoles a Domingo a partir de las 5:00 PM. Cupos limitados por turno.</p>
+                    <p>Atención de Miércoles a Domingo a partir de las 5:00 PM. Reserva con anticipación.</p>
                 </div>
                 <div class="origen-booking-box__cta">
-                    <?php nandark_render('atoms/button', [
-                        'text'    => 'Agendar Reserva Inmediata',
-                        'url'     => 'https://wa.me/573000000000?text=' . urlencode('Hola, quiero verificar disponibilidad para este fin de semana.'),
-                        'variant' => 'whatsapp',
-                        'icon'    => '✨'
-                    ]); ?>
+                    <a href="https://wa.me/573000000000?text=Hola%20Origen%2C%20quiero%20reservar%20una%20mesa." class="origen-btn-cta" target="_blank" rel="noopener">
+                        <span class="origen-btn-cta__icon">✨</span>
+                        <span>Agendar Reserva Inmediata</span>
+                    </a>
                 </div>
             </div>
         </div>
