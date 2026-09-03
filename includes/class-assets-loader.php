@@ -28,5 +28,14 @@ class Assets_Loader {
             NANDARK_ATOMIC_VERSION,
             true
         );
+
+        // Encolar React y wp-element nativos de WordPress + mobile-nav.js
+        wp_enqueue_script(
+            'nandark-mobile-react',
+            NANDARK_ATOMIC_URL . 'assets/js/mobile-nav.js',
+            ['wp-element'], // Dependencia nativa de React en WordPress Core
+            NANDARK_ATOMIC_VERSION,
+            true
+        );
     }
 }

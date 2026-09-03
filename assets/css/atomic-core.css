@@ -135,6 +135,180 @@ header.wp-block-template-part,
   color: var(--origen-bg) !important;
 }
 
+/* Botón Toggle Móvil */
+.origen-nav__toggle {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: 1px solid var(--origen-border-subtle);
+  border-radius: 2px;
+  padding: 0.5rem 0.9rem;
+  color: var(--origen-brass);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.origen-nav__toggle:hover {
+  border-color: var(--origen-brass);
+  background: rgba(197, 168, 128, 0.08);
+}
+.origen-nav__toggle-text {
+  font-family: var(--origen-font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.origen-nav__toggle-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 16px;
+}
+.origen-nav__line {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: var(--origen-brass);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Bloqueo de scroll al abrir drawer */
+body.origen-drawer-locked {
+  overflow: hidden !important;
+}
+
+/* 🎭 FULLSCREEN CURTAIN DRAWER MÓVIL */
+.origen-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0.4s ease;
+}
+.origen-drawer.is-open {
+  pointer-events: auto;
+  visibility: visible;
+}
+.origen-drawer__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(4, 5, 8, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.origen-drawer.is-open .origen-drawer__backdrop {
+  opacity: 1;
+}
+.origen-drawer__panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-height: 100vh;
+  background: var(--origen-surface);
+  border-bottom: 1px solid var(--origen-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem 2rem 3rem;
+  transform: translateY(-100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+.origen-drawer.is-open .origen-drawer__panel {
+  transform: translateY(0);
+}
+.origen-drawer__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--origen-border-subtle);
+  padding-bottom: 1.5rem;
+}
+.origen-drawer__brand {
+  font-family: var(--origen-font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+  color: var(--origen-brass);
+  font-weight: 700;
+}
+.origen-drawer__close {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--origen-border-subtle);
+  color: #ffffff;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.origen-drawer__close:hover {
+  border-color: var(--origen-brass);
+  color: var(--origen-brass);
+}
+.origen-drawer__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  margin: 2.5rem 0;
+}
+.origen-drawer__link {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 1rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.origen-drawer__link:hover {
+  transform: translateX(6px);
+  border-color: var(--origen-border);
+}
+.origen-drawer__link-num {
+  font-family: var(--origen-font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--origen-brass);
+  letter-spacing: 0.1em;
+}
+.origen-drawer__link-title {
+  font-family: var(--origen-font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+}
+.origen-drawer__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.origen-drawer__btn {
+  margin-top: 0 !important;
+}
+.origen-drawer__contact p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--origen-text-muted);
+  text-align: center;
+}
+
 /* 🎬 SCROLLYTELLING CONTAINER */
 .scrolly-section {
   position: relative;
@@ -782,13 +956,182 @@ header.wp-block-template-part,
   text-decoration: none;
 }
 
-/* Responsive Queries */
+/* ⚛️ ESTILOS DEL COTIZADOR REACT INTERACTIVO */
+.origen-react-booking-wrapper {
+  margin-bottom: 3.5rem;
+}
+.origen-calc-card {
+  background: var(--origen-surface);
+  border: 1px solid var(--origen-border);
+  border-radius: 4px;
+  padding: 3.5rem;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+}
+.origen-calc-header {
+  margin-bottom: 2.5rem;
+}
+.origen-calc-title {
+  font-family: var(--origen-font-display);
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  margin: 0.75rem 0 0.5rem;
+}
+.origen-calc-subtitle {
+  color: var(--origen-text-muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 650px;
+}
+.origen-calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 3rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--origen-border-subtle);
+  border-bottom: 1px solid var(--origen-border-subtle);
+}
+.origen-calc-label {
+  display: block;
+  font-family: var(--origen-font-display);
+  font-size: 0.92rem;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+}
+.origen-calc-range {
+  width: 100%;
+  height: 4px;
+  background: #1e293b;
+  border-radius: 2px;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.origen-calc-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--origen-brass);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(197, 168, 128, 0.5);
+  transition: transform 0.15s ease;
+}
+.origen-calc-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+.origen-calc-range-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+.origen-calc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.origen-calc-btn-opt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--origen-border-subtle);
+  border-radius: 2px;
+  color: #cbd5e1;
+  font-family: var(--origen-font-sans);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.origen-calc-btn-opt:hover {
+  border-color: var(--origen-border);
+  background: rgba(197, 168, 128, 0.04);
+}
+.origen-calc-btn-opt.is-active {
+  background: rgba(197, 168, 128, 0.1);
+  border-color: var(--origen-brass);
+  color: #ffffff;
+}
+.origen-calc-opt-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.origen-calc-opt-price {
+  font-size: 0.82rem;
+  color: var(--origen-brass);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.origen-calc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2.5rem;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.origen-calc-total-label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+.origen-calc-total-val {
+  display: block;
+  font-family: var(--origen-font-display);
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--origen-brass);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+.origen-calc-total-note {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--origen-text-muted);
+  margin-top: 0.4rem;
+}
+.origen-calc-submit {
+  width: auto !important;
+  margin-top: 0 !important;
+  padding: 1.1rem 2.25rem !important;
+}
+
+/* 📱 REGLAS RESPONSIVE MOBILE-FIRST (Breakpoints 900px & 640px) */
 @media (max-width: 900px) {
+  .origen-nav__links {
+    display: none !important;
+  }
+  .origen-nav__toggle {
+    display: inline-flex !important;
+  }
   .origen-events-card {
     grid-template-columns: 1fr;
   }
   .origen-events-card__content {
-    padding: 2.5rem;
+    padding: 2.5rem 2rem;
+  }
+  .origen-calc-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .origen-calc-card {
+    padding: 2.5rem 1.75rem;
+  }
+  .origen-calc-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .origen-calc-submit {
+    width: 100% !important;
   }
   .origen-footer__top {
     grid-template-columns: 1fr;
@@ -796,10 +1139,55 @@ header.wp-block-template-part,
   }
   .origen-menu-grid {
     grid-template-columns: 1fr;
+    gap: 2.5rem;
   }
   .scrolly-step {
-    left: 1.5rem;
-    right: 1.5rem;
-    max-width: calc(100% - 3rem);
+    left: 1rem;
+    right: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+  .scrolly-card {
+    padding: 2rem 1.5rem;
+  }
+  .scrolly-title {
+    font-size: 2rem;
+  }
+  .scrolly-subtitle {
+    font-size: 1.05rem;
+  }
+  .nandark-container {
+    padding: 0 1.25rem;
+  }
+  .origen-section {
+    padding: 5rem 0;
+  }
+  .origen-section-header {
+    margin-bottom: 3rem;
+  }
+  .origen-booking-box {
+    padding: 2.5rem 1.75rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 640px) {
+  .origen-nav__logo-title {
+    font-size: 1.25rem;
+  }
+  .origen-nav__logo-sub {
+    display: none;
+  }
+  .origen-section-title {
+    font-size: 1.85rem;
+  }
+  .origen-events-card__title {
+    font-size: 1.65rem;
+  }
+  .origen-calc-title {
+    font-size: 1.5rem;
+  }
+  .origen-calc-total-val {
+    font-size: 1.85rem;
   }
 }
