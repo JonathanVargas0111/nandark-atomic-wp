@@ -59,6 +59,7 @@ function nandark_render($component_path, $props = [], $echo = true) {
 require_once NANDARK_ATOMIC_PATH . 'includes/class-assets-loader.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-cpt-manager.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-self-updater.php';
+require_once NANDARK_ATOMIC_PATH . 'includes/class-bundle-manager.php';
 require_once NANDARK_ATOMIC_PATH . 'theme/template-loader.php';
 
 // Capa Backend / API & Servicios
@@ -72,6 +73,7 @@ add_action('plugins_loaded', function () {
     \NandarkAtomic\Assets_Loader::init();
     \NandarkAtomic\CPT_Manager::init();
     \NandarkAtomic\Self_Updater::init();
+    \NandarkAtomic\Bundle_Manager::init();
     \NandarkAtomic\Template_Loader::init();
     \NandarkAtomic\API\REST_API::init();
     \NandarkAtomic\API\GraphQL_Schema::init();
