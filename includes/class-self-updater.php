@@ -25,7 +25,7 @@ class Self_Updater {
     }
 
     /**
-     * Consulta la API de GitHub Releases
+     * Consulta la API de GitHub Releases con validación estricta
      */
     private static function get_latest_release() {
         $transient_key = 'nandark_atomic_latest_release';
@@ -43,7 +43,7 @@ class Self_Updater {
             'timeout' => 10,
         ];
 
-        // Token opcional si el repo llega a ser privado
+        // Token opcional si el repo es privado
         $token = defined('NANDARK_GITHUB_TOKEN') ? NANDARK_GITHUB_TOKEN : get_option('nandark_github_token', '');
         if (!empty($token)) {
             $args['headers']['Authorization'] = 'Bearer ' . $token;
@@ -62,6 +62,23 @@ class Self_Updater {
 
         set_transient($transient_key, $data, 300); // 5 minutos de caché
         return $data;
+    }
+
+    /**
+     * Valida que la URL del paquete pertenezca exclusivamente al dominio oficial de GitHub
+     */
+    private static function is_valid_package_url($url) {
+        if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        $parsed = wp_parse_url($url);
+        if (empty($parsed['scheme']) || $parsed['scheme'] !== 'https') {
+            return false;
+        }
+
+        $allowed_hosts = ['github.com', 'api.github.com', 'codeload.github.com', 'objects.githubusercontent.com'];
+        return in_array($parsed['host'] ?? '', $allowed_hosts, true);
     }
 
     /**
@@ -91,6 +108,11 @@ class Self_Updater {
                         break;
                     }
                 }
+            }
+
+            // Validar origen seguro de la URL de descarga
+            if (!self::is_valid_package_url($package)) {
+                return $transient;
             }
 
             $obj = new \stdClass();
@@ -170,7 +192,30 @@ class Self_Updater {
         ]);
     }
 
+    /**
+     * Verificación de seguridad reforzada:
+     * 1. Comprueba si el usuario tiene sesión activa con permisos de actualización
+     * 2. O valida el Bearer token con hash_equals() en tiempo constante
+     * 3. Aplica rate limiting de 5 peticiones por minuto por IP
+     */
     public static function verify_webhook_token($request) {
+        // Opción A: Usuario autenticado con rol de administrador
+        if (current_user_can('update_plugins')) {
+            return true;
+        }
+
+        // Rate limiting anti brute-force en memoria transitoria (5 intentos por IP cada 60s)
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $rate_key = 'nandark_update_rate_' . md5($ip);
+        $attempts = (int) get_transient($rate_key);
+
+        if ($attempts >= 5) {
+            return new \WP_Error('rest_rate_limited', 'Demasiados intentos de actualización. Intenta en 1 minuto.', ['status' => 429]);
+        }
+
+        set_transient($rate_key, $attempts + 1, 60);
+
+        // Opción B: Token Bearer secreto
         $auth_header = $request->get_header('authorization');
         $secret_key  = defined('NANDARK_DEPLOY_TOKEN') ? NANDARK_DEPLOY_TOKEN : get_option('nandark_deploy_token', 'nandark-secure-deploy-key-2026');
 
