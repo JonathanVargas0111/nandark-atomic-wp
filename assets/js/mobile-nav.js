@@ -48,6 +48,20 @@
         closeDrawer();
       }
     });
+
+    // Barra de navegación flotante con efecto cristal al scroll
+    const navEl = document.querySelector('.origen-nav');
+    if (navEl) {
+      const handleNavScroll = () => {
+        if (window.scrollY > 80) {
+          navEl.classList.add('is-scrolled');
+        } else {
+          navEl.classList.remove('is-scrolled');
+        }
+      };
+      window.addEventListener('scroll', handleNavScroll, { passive: true });
+      handleNavScroll();
+    }
   };
 
   // 2. Componente React: Calculadora Interactiva de Cenas & Eventos
@@ -68,7 +82,8 @@
     const BookingCalculator = () => {
       const [guests, setGuests] = useState(4);
       const [experience, setExperience] = useState('degustacion'); // 'degustacion' | 'maridaje' | 'rooftop'
-      const [date, setDate] = useState('viernes');
+      const [turn, setTurn] = useState('cena'); // 'almuerzo' | 'cena'
+      const [sommelierAddon, setSommelierAddon] = useState(false);
 
       const prices = {
         degustacion: 180000,
@@ -82,15 +97,21 @@
         rooftop: 'Cócteles & Tapas en Terraza Rooftop',
       };
 
-      const baseTotal = prices[experience] * guests;
+      const sommelierPricePerPerson = 45000;
+      const calculatedPersonPrice = prices[experience] + (sommelierAddon ? sommelierPricePerPerson : 0);
+      const baseTotal = calculatedPersonPrice * guests;
+
       const formattedTotal = new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
         maximumFractionDigits: 0,
       }).format(baseTotal);
 
+      const addonText = sommelierAddon ? ' + Cava Privada de Vinos' : '';
+      const turnName = turn === 'cena' ? 'Turno Noche (7:30 PM)' : 'Turno Tarde (1:00 PM)';
+
       const whatsappText = encodeURIComponent(
-        `Hola Origen, coticé en la web una reserva para ${guests} personas (${experienceNames[experience]}) para el día ${date}. Deseo verificar disponibilidad.`
+        `Hola Origen, coticé en la web una reserva para ${guests} personas (${experienceNames[experience]}${addonText}) en ${turnName}. Deseo verificar disponibilidad de mesa.`
       );
 
       return h(
@@ -104,35 +125,65 @@
           h(
             'p',
             { className: 'origen-calc-subtitle' },
-            'Selecciona el número de comensales y el formato gastronómico para calcular al instante tu presupuesto estimado.'
+            'Selecciona el turno, número de comensales y formato gastronómico para calcular al instante tu presupuesto estimado.'
           )
         ),
         h(
           'div',
           { className: 'origen-calc-grid' },
-          // Selector de comensales
+          // Columna 1: Turno y Comensales
           h(
             'div',
-            { className: 'origen-calc-control' },
-            h('label', { className: 'origen-calc-label' }, `Número de Personas: ${guests}`),
-            h('input', {
-              type: 'range',
-              min: 2,
-              max: 20,
-              step: 1,
-              value: guests,
-              onChange: (e) => setGuests(parseInt(e.target.value, 10)),
-              className: 'origen-calc-range',
-            }),
+            { className: 'origen-calc-col-left' },
+            // Selector de turno
             h(
               'div',
-              { className: 'origen-calc-range-ticks' },
-              h('span', null, '2 pers.'),
-              h('span', null, '10 pers.'),
-              h('span', null, '20 pers.')
+              { className: 'origen-calc-control' },
+              h('label', { className: 'origen-calc-label' }, 'Turno de Servicio:'),
+              h(
+                'div',
+                { className: 'origen-calc-turns' },
+                [
+                  { id: 'almuerzo', label: 'Tarde · 1:00 PM' },
+                  { id: 'cena', label: 'Noche · 7:30 PM' },
+                ].map((t) =>
+                  h(
+                    'button',
+                    {
+                      key: t.id,
+                      type: 'button',
+                      className: `origen-calc-turn-btn ${turn === t.id ? 'is-active' : ''}`,
+                      onClick: () => setTurn(t.id),
+                    },
+                    t.label
+                  )
+                )
+              )
+            ),
+            // Slider de comensales
+            h(
+              'div',
+              { className: 'origen-calc-control', style: { marginTop: '1.75rem' } },
+              h('label', { className: 'origen-calc-label' }, `Número de Personas: ${guests}`),
+              h('input', {
+                type: 'range',
+                min: 2,
+                max: 20,
+                step: 1,
+                value: guests,
+                onChange: (e) => setGuests(parseInt(e.target.value, 10)),
+                className: 'origen-calc-range',
+              }),
+              h(
+                'div',
+                { className: 'origen-calc-range-ticks' },
+                h('span', null, '2 pers.'),
+                h('span', null, '10 pers.'),
+                h('span', null, '20 pers.')
+              )
             )
           ),
-          // Selector de experiencia
+          // Columna 2: Selector de experiencia y Extra Sommelier
           h(
             'div',
             { className: 'origen-calc-control' },
@@ -157,6 +208,23 @@
                   h('span', { className: 'origen-calc-opt-price' }, opt.price)
                 )
               )
+            ),
+            // Checkbox Addon Sommelier
+            h(
+              'label',
+              { className: 'origen-calc-addon' },
+              h('input', {
+                type: 'checkbox',
+                checked: sommelierAddon,
+                onChange: (e) => setSommelierAddon(e.target.checked),
+                className: 'origen-calc-addon-check',
+              }),
+              h(
+                'div',
+                { className: 'origen-calc-addon-info' },
+                h('span', { className: 'origen-calc-addon-title' }, 'Acceso a Cava Privada de Vinos'),
+                h('span', { className: 'origen-calc-addon-price' }, '+$45.000 COP / persona')
+              )
             )
           )
         ),
@@ -169,7 +237,7 @@
             { className: 'origen-calc-total-box' },
             h('span', { className: 'origen-calc-total-label' }, 'Inversión Estimada Total:'),
             h('span', { className: 'origen-calc-total-val' }, formattedTotal),
-            h('span', { className: 'origen-calc-total-note' }, `(${guests} comensales · ${experienceNames[experience]})`)
+            h('span', { className: 'origen-calc-total-note' }, `(${guests} comensales · ${experienceNames[experience]}${addonText})`)
           ),
           h(
             'a',

@@ -63,16 +63,23 @@ header.wp-block-template-part,
 
 /* 🏛️ BARRA DE NAVEGACIÓN REFINADA */
 .origen-nav {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 50;
-  padding: 1.75rem 0;
-  border-bottom: 1px solid var(--origen-border-subtle);
-  background: rgba(7, 9, 14, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  z-index: 100;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid rgba(197, 168, 128, 0.12);
+  background: rgba(7, 9, 14, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: padding 0.35s ease, background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+.origen-nav.is-scrolled {
+  padding: 1rem 0;
+  background: rgba(7, 9, 14, 0.94);
+  border-color: rgba(197, 168, 128, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 .origen-nav__container {
   display: flex;
@@ -1031,6 +1038,74 @@ body.origen-drawer-locked {
   color: #64748b;
   letter-spacing: 0.05em;
 }
+
+.origen-calc-turns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.origen-calc-turn-btn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--origen-border-subtle);
+  border-radius: 2px;
+  color: var(--origen-text-muted);
+  font-family: var(--origen-font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+.origen-calc-turn-btn:hover {
+  color: #ffffff;
+  border-color: var(--origen-border);
+}
+.origen-calc-turn-btn.is-active {
+  background: rgba(197, 168, 128, 0.12);
+  border-color: var(--origen-brass);
+  color: var(--origen-brass);
+}
+
+.origen-calc-addon {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px dashed rgba(197, 168, 128, 0.3);
+  border-radius: 2px;
+  background: rgba(197, 168, 128, 0.03);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.origen-calc-addon:hover {
+  background: rgba(197, 168, 128, 0.06);
+  border-color: var(--origen-brass);
+}
+.origen-calc-addon-check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--origen-brass);
+  cursor: pointer;
+}
+.origen-calc-addon-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.origen-calc-addon-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+.origen-calc-addon-price {
+  font-size: 0.78rem;
+  color: var(--origen-brass);
+  letter-spacing: 0.04em;
+}
+
 .origen-calc-options {
   display: flex;
   flex-direction: column;
