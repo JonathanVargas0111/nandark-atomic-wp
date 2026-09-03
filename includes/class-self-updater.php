@@ -236,6 +236,31 @@ class Self_Updater {
         delete_transient('nandark_atomic_latest_release');
         delete_site_transient('update_plugins');
 
+        $release = self::get_latest_release();
+        if (!$release) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => 'No se pudo obtener información del último release de GitHub.',
+            ], 502);
+        }
+
+        $package_url = !empty($release->zipball_url) ? $release->zipball_url : '';
+        if (!empty($release->assets) && is_array($release->assets)) {
+            foreach ($release->assets as $asset) {
+                if (str_ends_with($asset->name, '.zip')) {
+                    $package_url = $asset->browser_download_url;
+                    break;
+                }
+            }
+        }
+
+        if (!self::is_valid_package_url($package_url)) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => 'Paquete de actualización rechazado: dominio o protocolo no autorizado.',
+            ], 403);
+        }
+
         wp_update_plugins();
 
         $skin = new \Automatic_Upgrader_Skin();
