@@ -1,27 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --origen-bg: #070a12;
-  --origen-card-bg: rgba(12, 17, 31, 0.78);
-  --origen-card-border: rgba(251, 191, 36, 0.22);
-  --origen-gold-primary: #f59e0b;
-  --origen-gold-light: #fbbf24;
-  --origen-gold-glow: rgba(245, 158, 11, 0.35);
-  --origen-whatsapp: #10b981;
-  --origen-whatsapp-hover: #059669;
-  --origen-text-main: #ffffff;
+  --origen-bg: #07090e;
+  --origen-surface: #0e131d;
+  --origen-surface-hover: #131a27;
+  --origen-border: rgba(197, 168, 128, 0.18);
+  --origen-border-subtle: rgba(255, 255, 255, 0.07);
+  --origen-brass: #c5a880;
+  --origen-brass-light: #dfb776;
+  --origen-brass-dark: #8c7355;
+  --origen-text-main: #f8fafc;
   --origen-text-muted: #94a3b8;
-  --origen-font-serif: "Playfair Display", Georgia, serif;
+  --origen-font-display: "Cinzel", "Times New Roman", serif;
+  --origen-font-serif: "Cormorant Garamond", Georgia, serif;
   --origen-font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Reset y Ocultar Header genérico de WordPress en la landing */
+/* Base & Reset */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
   background-color: var(--origen-bg) !important;
   color: var(--origen-text-main);
   font-family: var(--origen-font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
@@ -40,21 +47,23 @@ header.wp-block-template-part,
 
 .nandark-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 2.5rem;
 }
 
-/* 🍸 FLOATING LUXURY NAVBAR */
+/* 🏛️ BARRA DE NAVEGACIÓN REFINADA */
 .origen-nav {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 50;
-  padding: 1.5rem 0;
-  background: linear-gradient(180deg, rgba(7, 10, 18, 0.85) 0%, rgba(7, 10, 18, 0) 100%);
-  backdrop-filter: blur(8px);
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--origen-border-subtle);
+  background: rgba(7, 9, 14, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .origen-nav__container {
   display: flex;
@@ -65,51 +74,56 @@ header.wp-block-template-part,
   text-decoration: none;
   display: flex;
   flex-direction: column;
+  gap: 0.15rem;
 }
-.origen-nav__logo span {
-  font-family: var(--origen-font-serif);
-  font-size: 1.65rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  color: #ffffff;
-  background: linear-gradient(135deg, #ffffff 40%, #fbbf24 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.origen-nav__logo small {
-  font-size: 0.65rem;
+.origen-nav__logo-title {
+  font-family: var(--origen-font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
   letter-spacing: 0.25em;
-  color: var(--origen-gold-light);
-  font-weight: 600;
+  color: #ffffff;
+}
+.origen-nav__logo-sub {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  color: var(--origen-brass);
+  font-weight: 500;
+  text-transform: uppercase;
 }
 .origen-nav__links {
   display: flex;
-  gap: 2rem;
+  gap: 2.25rem;
   align-items: center;
 }
 .origen-nav__links a {
   color: #cbd5e1;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  letter-spacing: 0.05em;
-  transition: color 0.2s ease;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.25s ease;
 }
 .origen-nav__links a:hover {
-  color: var(--origen-gold-light);
+  color: var(--origen-brass);
 }
-.origen-nav__btn {
-  padding: 0.55rem 1.25rem !important;
-  border: 1px solid var(--origen-gold-primary) !important;
-  border-radius: 9999px;
-  color: var(--origen-gold-light) !important;
+.origen-nav__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.35rem !important;
+  border: 1px solid var(--origen-brass) !important;
+  color: var(--origen-brass) !important;
+  font-size: 0.8rem !important;
   font-weight: 600 !important;
-  transition: all 0.25s ease !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  border-radius: 2px;
+  transition: all 0.3s ease !important;
 }
-.origen-nav__btn:hover {
-  background: var(--origen-gold-primary);
-  color: #070a12 !important;
-  box-shadow: 0 0 15px var(--origen-gold-glow);
+.origen-nav__cta:hover {
+  background: var(--origen-brass);
+  color: var(--origen-bg) !important;
 }
 
 /* 🎬 SCROLLYTELLING CONTAINER */
@@ -142,7 +156,7 @@ header.wp-block-template-part,
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 25% 50%, rgba(7, 10, 18, 0.4) 0%, rgba(7, 10, 18, 0.88) 100%);
+  background: radial-gradient(circle at 20% 50%, rgba(7, 9, 14, 0.45) 0%, rgba(7, 9, 14, 0.92) 100%);
   z-index: 2;
   pointer-events: none;
 }
@@ -151,17 +165,17 @@ header.wp-block-template-part,
   z-index: 10;
 }
 
-/* ✨ LUXURY GLASSMORPHIC CARDS */
+/* ✨ TARJETAS DE DISEÑO ARQUITECTÓNICO / MINIMALISTA */
 .scrolly-step {
   position: absolute;
   top: 50%;
-  left: 2rem;
-  transform: translateY(-50%) translateY(30px);
+  left: 2.5rem;
+  transform: translateY(-50%) translateY(24px);
   width: 100%;
-  max-width: 540px;
+  max-width: 520px;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s ease;
   pointer-events: none;
 }
 .scrolly-step.is-active {
@@ -172,76 +186,64 @@ header.wp-block-template-part,
 }
 
 .scrolly-card {
-  background: var(--origen-card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--origen-card-border);
-  border-radius: 20px;
-  padding: 2.75rem 2.5rem;
-  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.85), 0 0 40px -15px var(--origen-gold-glow);
+  background: var(--origen-surface);
+  border: 1px solid var(--origen-border);
+  border-radius: 4px;
+  padding: 3rem 2.75rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
 }
 
-.scrolly-card__header {
+.scrolly-card__meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
-.scrolly-num {
-  font-family: var(--origen-font-sans);
-  font-size: 0.9rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  color: var(--origen-gold-light);
-}
-.scrolly-num i {
-  font-style: normal;
-  color: #64748b;
-  font-weight: 400;
-}
-
-.scrolly-badge {
-  display: inline-block;
-  padding: 0.3rem 0.85rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+.scrolly-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  border-radius: 9999px;
-  background: rgba(251, 191, 36, 0.12);
-  color: var(--origen-gold-light);
-  border: 1px solid rgba(251, 191, 36, 0.3);
+  letter-spacing: 0.2em;
+  color: var(--origen-brass);
 }
-.scrolly-badge--gold {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.15));
-  border-color: var(--origen-gold-primary);
+.scrolly-tag--accent {
+  color: #ffffff;
+}
+.scrolly-index {
+  font-family: var(--origen-font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #64748b;
 }
 
 .scrolly-title {
-  font-family: var(--origen-font-serif);
-  font-size: 3rem;
+  font-family: var(--origen-font-display);
+  font-size: 2.6rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  line-height: 1.1;
-  margin: 0.5rem 0 0.25rem;
+  letter-spacing: 0.1em;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
   color: #ffffff;
 }
 .scrolly-subtitle {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--origen-gold-light);
-  letter-spacing: 0.05em;
-  margin-bottom: 1.25rem;
+  font-family: var(--origen-font-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--origen-brass);
+  letter-spacing: 0.02em;
+  margin: 0 0 1.5rem;
 }
-.scrolly-divider {
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--origen-gold-primary), transparent);
-  margin-bottom: 1.25rem;
+.scrolly-line {
+  width: 32px;
+  height: 1px;
+  background: var(--origen-brass);
+  margin-bottom: 1.5rem;
 }
 .scrolly-desc {
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: 0.98rem;
+  line-height: 1.8;
   color: var(--origen-text-muted);
   margin: 0;
 }
@@ -249,87 +251,89 @@ header.wp-block-template-part,
 .scrolly-indicator {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: 2rem;
+  gap: 0.85rem;
+  margin-top: 2.25rem;
   color: #64748b;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
 }
-.scrolly-mouse {
-  width: 18px;
-  height: 28px;
-  border: 2px solid #64748b;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  padding-top: 4px;
-}
-.scrolly-wheel {
-  width: 3px;
-  height: 5px;
-  background: var(--origen-gold-light);
-  border-radius: 2px;
-  animation: scrolly-bounce 1.5s infinite;
-}
-@keyframes scrolly-bounce {
-  0%, 100% { transform: translateY(0); opacity: 1; }
-  50% { transform: translateY(6px); opacity: 0.2; }
+.scrolly-indicator__line {
+  width: 24px;
+  height: 1px;
+  background: var(--origen-brass);
 }
 
-/* 🌟 BOTÓN CTA DE LUJO */
-.origen-btn-cta {
+/* 🌟 BOTÓN SÓLIDO ELEGANTE (CERO AI-GRADIENT) */
+.origen-btn-solid {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   width: 100%;
-  box-sizing: border-box;
-  padding: 1.1rem 2rem;
-  margin-top: 1.75rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff !important;
+  padding: 1.1rem 1.75rem;
+  margin-top: 2rem;
+  background: var(--origen-brass);
+  color: #07090e !important;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  border: 1px solid var(--origen-brass);
+  transition: all 0.25s ease;
   cursor: pointer;
 }
-.origen-btn-cta:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+.origen-btn-solid:hover {
+  background: var(--origen-brass-light);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(197, 168, 128, 0.25);
 }
-.origen-btn-cta__icon {
-  font-size: 1.25rem;
+.origen-btn-solid__icon {
+  display: flex;
+  align-items: center;
+}
+.origen-btn-solid__arrow {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+.origen-btn-solid:hover .origen-btn-solid__arrow {
+  transform: translateX(4px);
 }
 
-/* 🍽️ EXPERIENCIAS GRID */
+/* 🍽️ GRID DE EXPERIENCIAS */
 .origen-section {
-  padding: 7rem 0;
+  padding: 8rem 0;
   background-color: var(--origen-bg);
   position: relative;
   z-index: 10;
 }
 .origen-section-header {
   text-align: center;
-  max-width: 600px;
-  margin: 0 auto 4.5rem;
+  max-width: 620px;
+  margin: 0 auto 5rem;
 }
 .origen-section-title {
-  font-family: var(--origen-font-serif);
-  font-size: 2.75rem;
-  font-weight: 700;
+  font-family: var(--origen-font-display);
+  font-size: 2.35rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: #ffffff;
   margin: 1rem 0 0.75rem;
+}
+.origen-section-line {
+  width: 40px;
+  height: 1px;
+  background: var(--origen-brass);
+  margin: 1.25rem auto;
 }
 .origen-section-desc {
   font-size: 1.05rem;
   color: var(--origen-text-muted);
+  line-height: 1.7;
 }
 
 .origen-grid-3 {
@@ -338,20 +342,20 @@ header.wp-block-template-part,
   gap: 2.5rem;
 }
 .origen-card {
-  background: #0d121f;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: var(--origen-surface);
+  border: 1px solid var(--origen-border-subtle);
+  border-radius: 4px;
   overflow: hidden;
-  transition: all 0.4s ease;
+  transition: all 0.35s ease;
 }
 .origen-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--origen-card-border);
-  box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.7), 0 0 25px -5px var(--origen-gold-glow);
+  border-color: var(--origen-border);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 .origen-card__media {
   width: 100%;
-  height: 250px;
+  height: 260px;
   overflow: hidden;
 }
 .origen-card__media img {
@@ -361,24 +365,25 @@ header.wp-block-template-part,
   transition: transform 0.6s ease;
 }
 .origen-card:hover .origen-card__media img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 .origen-card__body {
-  padding: 2rem;
+  padding: 2.25rem;
 }
 .origen-card__tag {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 600;
   text-transform: uppercase;
-  color: var(--origen-gold-light);
-  letter-spacing: 0.12em;
+  color: var(--origen-brass);
+  letter-spacing: 0.18em;
 }
 .origen-card__title {
-  font-family: var(--origen-font-serif);
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--origen-font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   color: #ffffff;
-  margin: 0.5rem 0 0.75rem;
+  margin: 0.65rem 0 0.85rem;
 }
 .origen-card__text {
   font-size: 0.95rem;
@@ -387,11 +392,11 @@ header.wp-block-template-part,
   margin: 0;
 }
 
-/* 📲 STRIP DE RESERVA */
+/* 📲 STRIP DE RESERVA SOBRIO */
 .origen-booking-strip {
-  padding: 5rem 0;
-  background: #05070d;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 6rem 0;
+  background: #05060a;
+  border-top: 1px solid var(--origen-border-subtle);
   position: relative;
   z-index: 10;
 }
@@ -399,23 +404,28 @@ header.wp-block-template-part,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, rgba(21, 29, 50, 0.6) 0%, rgba(10, 14, 26, 0.8) 100%);
-  border: 1px solid var(--origen-card-border);
-  border-radius: 20px;
-  padding: 3.5rem;
-  gap: 2.5rem;
+  background: var(--origen-surface);
+  border: 1px solid var(--origen-border);
+  border-radius: 4px;
+  padding: 4rem;
+  gap: 3rem;
   flex-wrap: wrap;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 .origen-booking-box__info h2 {
-  font-family: var(--origen-font-serif);
-  font-size: 2.25rem;
-  font-weight: 700;
+  font-family: var(--origen-font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   color: #ffffff;
   margin: 0.75rem 0 0.5rem;
 }
 .origen-booking-box__info p {
   color: var(--origen-text-muted);
-  font-size: 1.05rem;
+  font-size: 1rem;
+  line-height: 1.7;
   margin: 0;
+  max-width: 500px;
+}
+.origen-booking-box__cta {
+  min-width: 280px;
 }
