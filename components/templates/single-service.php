@@ -1,8 +1,11 @@
 <?php
 /**
- * Plantilla Template: Single Service
+ * Plantilla Template: Single Service (Diseño Sobrio & Vectorial)
  */
 get_header();
+
+require_once NANDARK_ATOMIC_PATH . 'components/atoms/svg-icons.php';
+use NandarkAtomic\Icons\SVG;
 ?>
 
 <main class="nandark-main nandark-service-single">
@@ -10,8 +13,9 @@ get_header();
         <?php while (have_posts()) : the_post(); ?>
             <article id="post-<?php the_ID(); ?>" <?php post_class('nandark-service-article'); ?>>
                 <header class="nandark-service-header">
-                    <?php nandark_render('atoms/badge', ['text' => 'Servicio Veterinario', 'tone' => 'accent']); ?>
+                    <span class="scrolly-tag">Servicio Especializado</span>
                     <h1 class="nandark-service-title"><?php the_title(); ?></h1>
+                    <div class="scrolly-line"></div>
                 </header>
 
                 <div class="nandark-service-body">
@@ -27,14 +31,15 @@ get_header();
                 </div>
 
                 <footer class="nandark-service-cta-box">
-                    <h3>¿Necesitas agendar este servicio?</h3>
-                    <p>Contáctanos directamente y te responderemos en minutos.</p>
-                    <?php nandark_render('atoms/button', [
-                        'text'    => 'Consultar por WhatsApp',
-                        'url'     => 'https://wa.me/573000000000?text=' . urlencode('Hola, me interesa información sobre ' . get_the_title()),
-                        'variant' => 'whatsapp',
-                        'icon'    => '💬'
-                    ]); ?>
+                    <h3>¿Deseas consultar o agendar este servicio?</h3>
+                    <p>Atención directa y personalizada por WhatsApp sin esperas.</p>
+                    <div class="nandark-service-cta-actions">
+                        <a href="<?php echo esc_url('https://wa.me/573000000000?text=' . rawurlencode('Hola, me interesa información sobre: ' . get_the_title())); ?>" class="origen-btn-solid" target="_blank" rel="noopener">
+                            <span class="origen-btn-solid__icon"><?php echo SVG::whatsapp(); // phpcs:ignore ?></span>
+                            <span>Consultar por WhatsApp</span>
+                            <span class="origen-btn-solid__arrow"><?php echo SVG::arrow_right(); // phpcs:ignore ?></span>
+                        </a>
+                    </div>
                 </footer>
             </article>
         <?php endwhile; ?>
