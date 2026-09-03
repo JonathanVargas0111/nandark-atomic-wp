@@ -1,99 +1,92 @@
-# Guía de Automatización, Bundle y Despliegue Remoto (La Puerta)
-> **Nandark Atomic Core — Suite Todo-en-Uno (All-in-One Plugin Bundle)**
+# Guía de Arquitectura de Temas, Endpoints y Despliegue Remoto
+> **Nandark Atomic Core — Documentación Técnica para Desarrolladores, Agentes y Frontends**
 
-Este documento explica cómo cualquier desarrollador o agente de IA (**Claude Code**, **Antigravity**, **Cursor**) puede modificar, desplegar y aprovisionar la suite completa de plugins sin acceder manualmente a buscar ni subir múltiples ZIPs al panel de administración de WordPress.
-
----
-
-## 🎯 El Problema que Resuelve
-Para que este ecosistema funcione al 100% se requiere una tríada de herramientas:
-1. `nandark-atomic-core`: El motor visual, scrollytelling y arquitectura de componentes.
-2. `mcp-adapter`: El puente de protocolo MCP oficial para Claude/Gemini.
-3. `enable-abilities-for-mcp`: El catálogo de 101 habilidades de WordPress.
-4. `wp-graphql`: La capa de consultas de alta velocidad.
-
-**El dolor habitual:** Ir a repositorios de GitHub y a WordPress.org, descargar 3 o 4 ZIPs separados y subirlos uno por uno.  
-**La Solución Nandark ("Plugin Bundle / Suite Installer"):**  
-Subes **un solo plugin** (`nandark-atomic-core`). Este actúa como el **Host / Orquestador Maestro** y automáticamente descarga, instala y activa las demás dependencias oficiales por ti.
+Este documento recopila las directrices de arquitectura de temas en WordPress, los endpoints de consumo para herramientas/IA y el sistema de aprovisionamiento de dependencias.
 
 ---
 
-## ⚙️ Arquitectura del Sistema y Bundle
+## 🏛️ 1. Arquitectura de Temas: ¿Cuál es el Mejor Camino Técnico?
+
+Al construir para clientes y agencias en 2026, la industria y la documentación oficial de WordPress ofrecen tres modelos:
 
 ```
-TU CONSOLA (CLAUDE / AGENTE)                 GITHUB (RELEASES)              WORDPRESS CLIENTE
-┌──────────────────────────────┐        ┌─────────────────────────┐       ┌────────────────────────┐
-│ 1. git commit & push         │ ────>  │ Repositorio Oficial     │       │ Endpoint REST Seguro   │
-│ 2. ./deploy-update.sh <url>  │        │ (Releases / Zipball)    │       │ /nandark/v1/self-update│
-└──────────────┬───────────────┘        └───────────┬─────────────┘       └───────────┬────────────┘
-               │                                    │                                 │
-               │ POST con Bearer Token              │                                 │
-               └────────────────────────────────────┼────────────────────────────────>│
-                                                    │ Descarga paquete HTTPS          │
-                                                    │ Validado (objects.github.com)   │
-                                                    └─────────────────────────────────┘
-                                                                ▼
-                                                    Plugin se actualiza solo
-                                                    y se reactiva automáticamente
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 1. THEME TRADICIONAL / CONSTRUCTOR (El modelo roto)                        │
+│    Depende de Elementor/Divi. 40+ plugins, 350+ peticiones HTTP.           │
+│    El cliente o una actualización rompe el CSS. ❌ NO USAR EN NANDARK.      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 2. BLOCK THEMES / FULL SITE EDITING (FSE)                                  │
+│    Todo son bloques HTML (`theme.json`). Muy bueno para blogs limpios, pero │
+│    demasiado rígido para experiencias complejas de Scrollytelling/Canvas.   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 3. PLUGIN-DRIVEN ATOMIC THEME / HYBRID HEADLESS (La arquitectura Nandark)  │
+│    El Theme es un caparazón ultraliviano de 10 líneas. Toda la ingeniería   │
+│    y diseño vive en el plugin `nandark-atomic-core` mediante componentes.    │
+│    ✅ 100% portable, indestructible para el cliente y versionable en Git.   │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Por qué elegimos la arquitectura "Plugin-Driven":
+1. **Inmunidad a cambios de Theme:** Si el cliente cambia o actualiza el tema activo de WordPress (ej. Twenty Twenty-Five o Astra), **la web no se rompe**, porque `Template_Loader` toma el control de las rutas clave (`/`, `/servicios/`).
+2. **Versionable en Git con CI/CD:** El código de componentes atómicos vive en el plugin, lo que nos permite auto-actualizarlo con "La Puerta" (`Self_Updater`) en 1 comando.
+3. **Multi-plataforma:** La misma lógica sirve para renderizar en PHP en el servidor, o para consumirse vía JSON en Next.js/Astro/móvil.
 
 ---
 
-## 🚀 Comandos de Despliegue y Aprovisionamiento
+## 🔌 2. Catálogo de Endpoints REST para Herramientas, Chatbots e IA
 
-### 1. Aprovisionar Todo el Bundle en 1 Comando (`--bundle`)
-Si instalaste `nandark-atomic-core` en un WordPress nuevo y quieres que él mismo descargue y active `mcp-adapter`, `enable-abilities-for-mcp` y `wp-graphql`:
+El plugin expone rutas bajo el namespace `nandark/v1` diseñadas para ser consumidas por agentes (Claude Code, Antigravity, n8n, chatbots de WhatsApp o frontends desacoplados):
 
+### A. `/wp-json/nandark/v1/landing` (GET - Público)
+Devuelve toda la estructura de la landing en formato JSON limpio (hero steps, destacados de carta, experiencias y addons):
 ```bash
-# Aprovisionar bundle en local
-./deploy-update.sh http://nandark-lab.local --bundle
-
-# Aprovisionar bundle en producción / VPS remoto
-./deploy-update.sh https://tusitio.com --bundle "tu-token-secreto"
+curl -s "https://tusitio.com/wp-json/nandark/v1/landing"
 ```
 
-**Respuesta JSON esperada:**
+### B. `/wp-json/nandark/v1/quote` (POST - Público)
+Calcula cotizaciones de reservas VIP en tiempo real para cualquier bot de mensajería o aplicación externa:
+```bash
+curl -s -X POST -H "Content-Type: application/json" \
+  -d '{"guests": 6, "experience": "maridaje", "sommelier_addon": true, "turn": "cena"}' \
+  "https://tusitio.com/wp-json/nandark/v1/quote"
+```
+**Respuesta JSON:**
 ```json
 {
   "success": true,
-  "message": "Proceso de aprovisionamiento de bundle completado.",
-  "results": {
-    "mcp-adapter": "Ya instalado y activo",
-    "enable-abilities-for-mcp": "Ya instalado y activo",
-    "wp-graphql": "Instalado y activado exitosamente"
+  "quote": {
+    "guests": 6,
+    "experience": "Experiencia con Maridaje de Alta Gama",
+    "turn": "Turno Noche (7:30 PM)",
+    "sommelier_addon": true,
+    "price_per_person": 305000,
+    "total": 1830000,
+    "formatted_total": "$ 1.830.000",
+    "whatsapp_url": "https://wa.me/573000000000?text=..."
   }
 }
 ```
 
-### 2. Auto-Actualización del Plugin en Caliente
+### C. `/wp-json/nandark/v1/bundle-status` (GET - Requiere Bearer Token)
+Inspecciona si están instalados y activos `mcp-adapter`, `enable-abilities-for-mcp` y `wp-graphql`.
+
+### D. `/wp-json/nandark/v1/install-bundle` (POST - Requiere Bearer Token)
+Descarga, instala y activa automáticamente toda la suite de plugins oficiales.
+
+### E. `/wp-json/nandark/v1/self-update` (POST - Requiere Bearer Token)
+Descarga la última versión de GitHub y sobreescribe el plugin en caliente.
+
+---
+
+## 🚀 3. Comandos de Despliegue y Aprovisionamiento
+
 ```bash
-# Actualizar plugin a la última versión de GitHub
+# 1. Aprovisionar bundle completo (mcp, abilities, graphql) en 1 paso:
+./deploy-update.sh http://nandark-lab.local --bundle
+
+# 2. Actualizar el código del plugin desde GitHub:
 ./deploy-update.sh http://nandark-lab.local
-```
 
-### 3. Consultar Estado de la Suite vía API
-```bash
-curl -s -H "Authorization: Bearer nandark-secure-deploy-key-2026" \
-  https://tusitio.com/wp-json/nandark/v1/bundle-status
-```
-
----
-
-## 🔒 Seguridad Implementada
-
-1. **Anti Timing-Attacks (`hash_equals`):** Comparación criptográfica en tiempo constante del Bearer token.
-2. **Rate Limiting Anti Brute-Force:** Bloqueo con `HTTP 429` a partir del 5º intento fallido por IP en 60 segundos.
-3. **Restricción Estricta de Origen:** Solo se admiten descargas de paquetes oficiales de `github.com` y `wordpress.org` sobre HTTPS.
-4. **Verificación de Capacidades:** Si el usuario es administrador autenticado con permiso `update_plugins`, se aprueba automáticamente.
-
----
-
-## 📝 Configuración en `wp-config.php` (Servidor de Producción)
-
-```php
-// Token secreto para comandos CLI remotos
-define('NANDARK_DEPLOY_TOKEN', 'clave_super_segura_de_tu_cliente');
-
-// Opcional: Token para repositorios privados de GitHub
-define('NANDARK_GITHUB_TOKEN', 'ghp_xxxxxxxxxxxxxxxxxxxx');
+# 3. Desplegar en producción con clave secreta:
+./deploy-update.sh https://cliente.com --bundle "tu-token-secreto"
 ```
