@@ -5,13 +5,13 @@
   const canvas = document.getElementById('scrollytelling-canvas');
   if (!container || !canvas) return;
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { alpha: false });
   const frameCount = 240;
-  const frames = [];
+  const frames = new Array(frameCount);
   let currentFrameIndex = 0;
-  let isCanvasReady = false;
+  let targetFrameIndex = 0;
+  let isTicking = false;
 
-  // URL base de los fotogramas (pasada desde PHP via data-attribute)
   const framesBaseUrl = container.dataset.framesUrl || '';
 
   const getFrameUrl = (index) => {
@@ -19,40 +19,88 @@
     return `${framesBaseUrl}frame_${pad}.jpg`;
   };
 
-  // Pre-cargar imágenes progresivamente
-  const preloadImages = () => {
-    for (let i = 1; i <= frameCount; i++) {
-      const img = new Image();
-      img.src = getFrameUrl(i);
-      if (i === 1) {
-        img.onload = () => {
-          isCanvasReady = true;
-          resizeCanvas();
-          renderFrame(0);
-        };
+  const loadSingleFrame = (index) => {
+    return new Promise((resolve) => {
+      if (frames[index] && frames[index].complete) {
+        return resolve(frames[index]);
       }
-      frames.push(img);
-    }
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = getFrameUrl(index + 1);
+      img.onload = () => {
+        frames[index] = img;
+        resolve(img);
+      };
+      img.onerror = () => resolve(null);
+    });
   };
 
-  // Ajustar tamaño del canvas con soporte Retina
+  // Pre-carga progresiva en 3 fases:
+  // Fase 1: Primer frame inmediato
+  // Fase 2: Muestreo de cada 5 frames (recorrido suave mientras baja el resto)
+  // Fase 3: Relleno en background usando requestIdleCallback
+  const preloadProgressive = async () => {
+    await loadSingleFrame(0);
+    resizeCanvas();
+    renderFrame(0);
+
+    const keyframes = [];
+    for (let i = 0; i < frameCount; i += 5) {
+      keyframes.push(loadSingleFrame(i));
+    }
+    await Promise.all(keyframes);
+
+    const loadRemaining = (startIdx = 0) => {
+      let i = startIdx;
+      const batchSize = 10;
+      while (i < frameCount && i < startIdx + batchSize) {
+        if (!frames[i]) loadSingleFrame(i);
+        i++;
+      }
+      if (i < frameCount) {
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(() => loadRemaining(i));
+        } else {
+          setTimeout(() => loadRemaining(i), 16);
+        }
+      }
+    };
+
+    loadRemaining(0);
+  };
+
+  let cachedWidth = 0;
+  let cachedHeight = 0;
+
   const resizeCanvas = () => {
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cachedWidth = window.innerWidth;
+    cachedHeight = window.innerHeight;
+    canvas.width = cachedWidth * dpr;
+    canvas.height = cachedHeight * dpr;
     ctx.scale(dpr, dpr);
     renderFrame(currentFrameIndex);
   };
 
-  // Dibujar el fotograma manteniendo proporción (cover)
   const renderFrame = (index) => {
-    const img = frames[index];
+    let img = frames[index];
+    if (!img || !img.complete) {
+      // Si el frame exacto no ha cargado, buscar el frame más cercano disponible
+      for (let offset = 1; offset < 20; offset++) {
+        if (frames[index - offset] && frames[index - offset].complete) {
+          img = frames[index - offset];
+          break;
+        } else if (frames[index + offset] && frames[index + offset].complete) {
+          img = frames[index + offset];
+          break;
+        }
+      }
+    }
+
     if (!img || !img.complete) return;
 
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-
-    // Cover math
+    const w = cachedWidth || window.innerWidth;
+    const h = cachedHeight || window.innerHeight;
     const imgRatio = 1920 / 1080;
     const screenRatio = w / h;
     let drawW, drawH, drawX, drawY;
@@ -69,43 +117,80 @@
       drawY = 0;
     }
 
-    ctx.clearRect(0, 0, w, h);
     ctx.drawImage(img, drawX, drawY, drawW, drawH);
   };
 
-  // Control de scroll y sincronización
-  const updateScroll = () => {
-    const rect = container.getBoundingClientRect();
-    const scrollProgress = Math.min(
-      Math.max(-rect.top / (rect.height - window.innerHeight), 0),
-      1
-    );
+  const onScroll = () => {
+    if (!isTicking) {
+      window.requestAnimationFrame(() => {
+        const rect = container.getBoundingClientRect();
+        const maxScroll = rect.height - window.innerHeight;
+        const scrollProgress = maxScroll > 0 ? Math.min(Math.max(-rect.top / maxScroll, 0), 1) : 0;
 
-    const targetFrame = Math.min(
-      Math.floor(scrollProgress * (frameCount - 1)),
-      frameCount - 1
-    );
+        targetFrameIndex = Math.min(
+          Math.floor(scrollProgress * (frameCount - 1)),
+          frameCount - 1
+        );
 
-    if (targetFrame !== currentFrameIndex) {
-      currentFrameIndex = targetFrame;
-      requestAnimationFrame(() => renderFrame(currentFrameIndex));
+        if (targetFrameIndex !== currentFrameIndex) {
+          currentFrameIndex = targetFrameIndex;
+          renderFrame(currentFrameIndex);
+        }
+
+        const steps = container.querySelectorAll('.scrolly-step');
+        steps.forEach((step) => {
+          const stepStart = parseFloat(step.dataset.start || 0);
+          const stepEnd = parseFloat(step.dataset.end || 1);
+          if (scrollProgress >= stepStart && scrollProgress <= stepEnd) {
+            step.classList.add('is-active');
+          } else {
+            step.classList.remove('is-active');
+          }
+        });
+
+        isTicking = false;
+      });
+      isTicking = true;
     }
+  };
 
-    // Actualizar visibilidad de los pasos de texto narrativo
-    const steps = container.querySelectorAll('.scrolly-step');
-    steps.forEach((step) => {
-      const stepStart = parseFloat(step.dataset.start || 0);
-      const stepEnd = parseFloat(step.dataset.end || 1);
-      if (scrollProgress >= stepStart && scrollProgress <= stepEnd) {
-        step.classList.add('is-active');
-      } else {
-        step.classList.remove('is-active');
-      }
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(resizeCanvas, 100);
+  }, { passive: true });
+
+  preloadProgressive();
+
+  // 📜 Tabs interactivos para filtrado del menú
+  const initMenuTabs = () => {
+    const tabBtns = document.querySelectorAll('.origen-tab-btn');
+    const menuCols = document.querySelectorAll('.origen-menu-col');
+    if (!tabBtns.length) return;
+
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+
+        const filter = btn.dataset.filter || 'all';
+
+        menuCols.forEach((col) => {
+          const colType = col.dataset.col;
+          if (filter === 'all' || filter === colType) {
+            col.classList.remove('is-hidden');
+          } else {
+            col.classList.add('is-hidden');
+          }
+        });
+      });
     });
   };
 
-  window.addEventListener('resize', resizeCanvas);
-  window.addEventListener('scroll', updateScroll, { passive: true });
-
-  preloadImages();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMenuTabs);
+  } else {
+    initMenuTabs();
+  }
 })();
+

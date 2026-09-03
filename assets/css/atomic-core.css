@@ -431,6 +431,43 @@ header.wp-block-template-part,
 }
 
 /* 📜 MENÚ DE TEMPORADA */
+.origen-menu-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+.origen-tab-btn {
+  background: transparent;
+  border: 1px solid var(--origen-border-subtle);
+  color: var(--origen-text-muted);
+  font-family: var(--origen-font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.4rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.origen-tab-btn:hover {
+  color: #ffffff;
+  border-color: var(--origen-brass);
+}
+.origen-tab-btn.is-active {
+  background: var(--origen-brass);
+  border-color: var(--origen-brass);
+  color: #07090e;
+}
+.origen-menu-col.is-hidden {
+  display: none !important;
+}
+.origen-menu-item.is-hidden {
+  display: none !important;
+}
+
 .origen-menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
