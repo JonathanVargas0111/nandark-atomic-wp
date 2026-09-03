@@ -160,6 +160,8 @@
     resizeTimeout = setTimeout(resizeCanvas, 100);
   }, { passive: true });
 
+  window.addEventListener('scroll', onScroll, { passive: true });
+
   preloadProgressive();
 
   // 📜 Tabs interactivos para filtrado del menú
