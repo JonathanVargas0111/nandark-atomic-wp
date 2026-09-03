@@ -60,6 +60,8 @@ require_once NANDARK_ATOMIC_PATH . 'includes/class-assets-loader.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-cpt-manager.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-self-updater.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-bundle-manager.php';
+require_once NANDARK_ATOMIC_PATH . 'includes/class-performance-optimizer.php';
+require_once NANDARK_ATOMIC_PATH . 'includes/class-seo-schema-manager.php';
 require_once NANDARK_ATOMIC_PATH . 'theme/template-loader.php';
 
 // Capa Backend / API & Servicios
@@ -70,6 +72,8 @@ require_once NANDARK_ATOMIC_PATH . 'api/class-graphql-schema.php';
 
 // Inicialización de módulos
 add_action('plugins_loaded', function () {
+    \NandarkAtomic\Performance_Optimizer::init();
+    \NandarkAtomic\Seo_Schema_Manager::init();
     \NandarkAtomic\Assets_Loader::init();
     \NandarkAtomic\CPT_Manager::init();
     \NandarkAtomic\Self_Updater::init();

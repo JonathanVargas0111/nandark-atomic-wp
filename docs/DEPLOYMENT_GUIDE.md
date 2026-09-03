@@ -90,3 +90,20 @@ Descarga la última versión de GitHub y sobreescribe el plugin en caliente.
 # 3. Desplegar en producción con clave secreta:
 ./deploy-update.sh https://cliente.com --bundle "tu-token-secreto"
 ```
+
+---
+
+## ⚡ 4. Optimización de Rendimiento Nativa (Anti-Bloat)
+
+El módulo `Performance_Optimizer` limpia automáticamente la basura de WordPress Core sin requerir plugins pesados:
+* **Emojis de WP:** Remueve scripts, estilos y llamadas DNS innecesarias a `s.w.org`.
+* **Gutenberg CSS Innecesario:** Dequeue automático de `wp-block-library`, `wp-block-library-theme` y estilos globales en páginas atómicas, ahorrando más de 50KB de CSS sin uso.
+* **Seguridad & Limpieza:** Deshabilita XML-RPC, oEmbeds en frontend y oculta la versión de WordPress (`wp_generator`) de las cabeceras HTML.
+
+---
+
+## 🧠 5. Motor de SEO Estructurado & AEO (Search & AI Ready)
+
+El módulo `Seo_Schema_Manager` inyecta automáticamente en `<head>`:
+* **Schema.org JSON-LD:** Entidad compuesta `Restaurant` y `BarOrPub` con horarios precisos, geolocalización en Bogotá, platos principales con precios en COP y políticas de reservas. Optimizado para indexación en Google y respuestas precisas en ChatGPT, Gemini y Perplexity.
+* **Open Graph / Tarjetas Sociales:** Metadatos `og:title`, `og:description`, `og:image` (1200x630px) y Twitter Cards para que cualquier enlace compartido en WhatsApp o redes luzca impecable.
