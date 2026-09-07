@@ -122,6 +122,12 @@ class Bundle_Manager {
             'callback'            => [__CLASS__, 'handle_install_bundle'],
             'permission_callback' => [__CLASS__, 'verify_permission'],
         ]);
+
+        register_rest_route('nandark/v1', '/setup-mcp-key', [
+            'methods'             => 'POST',
+            'callback'            => [__CLASS__, 'handle_setup_mcp_key'],
+            'permission_callback' => [__CLASS__, 'verify_permission'],
+        ]);
     }
 
     public static function verify_permission($request) {
@@ -198,4 +204,43 @@ class Bundle_Manager {
             'bundle'  => self::get_bundle_status(),
         ], 200);
     }
+
+    /**
+     * Genera o activa el Bearer Token para Enable Abilities for MCP remotamente
+     */
+    public static function handle_setup_mcp_key() {
+        if (!function_exists('ewpa_generate_api_key')) {
+            $plugin_file = WP_PLUGIN_DIR . '/enable-abilities-for-mcp/includes/auth.php';
+            if (file_exists($plugin_file)) {
+                require_once $plugin_file;
+            }
+        }
+
+        // Buscar un usuario con rol de administrador
+        $admins = get_users(['role' => 'administrator', 'number' => 1]);
+        if (empty($admins)) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => 'No se encontró un usuario administrador.',
+            ], 404);
+        }
+
+        $admin_id = $admins[0]->ID;
+
+        // Si la función existe, generamos la clave
+        if (function_exists('ewpa_generate_api_key')) {
+            $plain_key = ewpa_generate_api_key($admin_id);
+            return new \WP_REST_Response([
+                'success'   => true,
+                'api_key'   => $plain_key,
+                'server_url'=> site_url('/wp-json/mcp/mcp-adapter-default-server'),
+            ], 200);
+        }
+
+        return new \WP_REST_Response([
+            'success' => false,
+            'message' => 'El plugin enable-abilities-for-mcp no está disponible.',
+        ], 500);
+    }
 }
+
