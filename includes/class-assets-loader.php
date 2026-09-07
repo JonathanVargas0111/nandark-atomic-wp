@@ -20,7 +20,12 @@ class Assets_Loader {
 
         wp_enqueue_style('nandark-atomic-core');
 
-        // Encolar script interactivo de scrollytelling
+        // Si el Tema activo tiene un archivo style.css o theme.css, encolarlo automáticamente como capa superior (Skin)
+        if (file_exists(get_stylesheet_directory() . '/style.css')) {
+            wp_enqueue_style('nandark-theme-skin', get_stylesheet_uri(), ['nandark-atomic-core'], wp_get_theme()->get('Version'));
+        }
+
+        // Encolar script interactivo de scrollytelling (solo si existe el contenedor en la página)
         wp_enqueue_script(
             'nandark-scrollytelling',
             NANDARK_ATOMIC_URL . 'assets/js/scrollytelling.js',

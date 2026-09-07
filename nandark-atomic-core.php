@@ -32,10 +32,14 @@ add_filter('wp_is_application_passwords_available', '__return_true');
  * @return string|void
  */
 function nandark_render($component_path, $props = [], $echo = true) {
-    $file = NANDARK_ATOMIC_PATH . 'components/' . ltrim($component_path, '/') . '.php';
+    $relative_path = 'components/' . ltrim($component_path, '/') . '.php';
+
+    // 1. Prioridad: Buscar si el Tema Activo (o Child Theme) tiene el componente personalizado
+    $theme_file = locate_template($relative_path);
+    $file = $theme_file ? $theme_file : (NANDARK_ATOMIC_PATH . $relative_path);
 
     if (!file_exists($file)) {
-        if (WP_DEBUG) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log("Nandark Atomic: Componente no encontrado en {$file}");
         }
         return '';
