@@ -1336,3 +1336,52 @@ body.origen-drawer-locked {
   }
 }
 
+/* 📜 ARTÍCULO INDIVIDUAL / CRÓNICA SINGLE */
+.origen-single-article {
+  padding: 8rem 0 6rem;
+  min-height: 70vh;
+}
+.origen-article-header {
+  margin-bottom: 3.5rem;
+}
+.origen-article-title {
+  font-family: var(--origen-font-serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.2;
+  color: #ffffff;
+  margin: 1rem 0 1.5rem;
+  font-weight: 700;
+  max-width: 900px;
+}
+.origen-article-content {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: #cbd5e1;
+  max-width: 800px;
+}
+.origen-article-content p {
+  margin-bottom: 1.75rem;
+}
+.origen-article-footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--origen-border-subtle);
+}
+.origen-article-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--origen-brass);
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  transition: gap 0.2s ease;
+}
+.origen-article-back:hover {
+  gap: 0.9rem;
+  color: #ffffff;
+}
+
+

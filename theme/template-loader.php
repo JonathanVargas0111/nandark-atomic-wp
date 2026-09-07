@@ -48,6 +48,18 @@ class Template_Loader {
             }
         }
 
+        // Si estamos viendo una entrada individual estándar del Blog (post)
+        if (is_singular('post')) {
+            $theme_tpl = locate_template(['components/templates/single-post.php', 'single.php']);
+            if ($theme_tpl) {
+                return $theme_tpl;
+            }
+            $custom_template = NANDARK_ATOMIC_PATH . 'components/templates/single-post.php';
+            if (file_exists($custom_template)) {
+                return $custom_template;
+            }
+        }
+
         return $template;
     }
 }
