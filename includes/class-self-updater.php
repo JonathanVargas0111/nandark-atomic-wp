@@ -51,17 +51,25 @@ class Self_Updater {
 
         $response = wp_remote_get($url, $args);
 
-        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-            return false;
+        // Si existe un Release formal en GitHub, lo usamos
+        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
+            $data = json_decode(wp_remote_retrieve_body($response));
+            if ($data && !empty($data->tag_name)) {
+                set_transient($transient_key, $data, 300);
+                return $data;
+            }
         }
 
-        $data = json_decode(wp_remote_retrieve_body($response));
-        if (!$data || empty($data->tag_name)) {
-            return false;
-        }
+        // Fallback: Si no hay releases formales, usamos el archivo de la rama main
+        $fallback = (object) [
+            'tag_name'     => 'v' . NANDARK_ATOMIC_VERSION,
+            'name'         => 'Nandark Atomic Core (Main Branch)',
+            'body'         => 'Actualización continua desde la rama main de GitHub.',
+            'zipball_url'  => 'https://github.com/' . self::GITHUB_REPO . '/archive/refs/heads/main.zip',
+            'assets'       => [],
+        ];
 
-        set_transient($transient_key, $data, 300); // 5 minutos de caché
-        return $data;
+        return $fallback;
     }
 
     /**
@@ -170,13 +178,20 @@ class Self_Updater {
     public static function post_install($true, $hook_extra, $result) {
         global $wp_filesystem;
 
-        if (isset($hook_extra['plugin']) && $hook_extra['plugin'] === self::MAIN_FILE) {
-            $proper_destination = WP_PLUGIN_DIR . '/' . self::SLUG;
-            $wp_filesystem->move($result['destination'], $proper_destination);
-            $result['destination'] = $proper_destination;
-            activate_plugin(self::MAIN_FILE);
+        if (is_wp_error($result)) {
+            return $result;
         }
 
+        $proper_destination = WP_PLUGIN_DIR . '/' . self::SLUG;
+
+        // Si la carpeta descomprimida tiene otro nombre (ej. nandark-atomic-wp-main), la movemos
+        if (isset($result['destination']) && $result['destination'] !== $proper_destination) {
+            $wp_filesystem->delete($proper_destination, true);
+            $wp_filesystem->move($result['destination'], $proper_destination);
+            $result['destination'] = $proper_destination;
+        }
+
+        activate_plugin(self::MAIN_FILE);
         return $result;
     }
 

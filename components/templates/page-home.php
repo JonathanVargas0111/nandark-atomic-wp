@@ -32,6 +32,9 @@ $frames_url = NANDARK_ATOMIC_URL . 'assets/frames/';
     <!-- Información Práctica Organism -->
     <?php nandark_render('organisms/practical-info'); ?>
 
+    <!-- Bitácora & Blog Editorial Organism -->
+    <?php nandark_render('organisms/blog-grid'); ?>
+
     <!-- Strip Reserva Organism -->
     <?php nandark_render('organisms/booking-strip'); ?>
 

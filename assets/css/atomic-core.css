@@ -1266,3 +1266,73 @@ body.origen-drawer-locked {
     font-size: 1.85rem;
   }
 }
+
+/* 📚 CRÓNICAS & BLOG EDITORIAL */
+.origen-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  margin-top: 3.5rem;
+}
+.origen-blog-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--origen-border-subtle);
+  border-radius: 2px;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  position: relative;
+}
+.origen-blog-card:hover {
+  background: rgba(197, 168, 128, 0.04);
+  border-color: var(--origen-brass);
+  transform: translateY(-4px);
+}
+.origen-blog-date {
+  font-family: var(--origen-font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--origen-brass);
+  margin-bottom: 1.25rem;
+  display: block;
+}
+.origen-blog-title {
+  font-family: var(--origen-font-serif);
+  font-size: 1.35rem;
+  line-height: 1.35;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+.origen-blog-excerpt {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin-bottom: 2rem;
+}
+.origen-blog-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--origen-brass);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: gap 0.2s ease;
+}
+.origen-blog-link:hover {
+  gap: 0.8rem;
+  color: #ffffff;
+}
+@media (max-width: 900px) {
+  .origen-blog-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
