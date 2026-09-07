@@ -29,13 +29,20 @@
                     $excerpt = get_the_excerpt() ?: wp_trim_words(get_the_content(), 22, '...');
                     ?>
                     <article class="origen-blog-card">
-                        <span class="origen-blog-date"><?php echo esc_html(strtoupper($date_formatted)); ?> · CRÓNICA 0<?php echo $counter++; ?></span>
-                        <h3 class="origen-blog-title"><?php the_title(); ?></h3>
-                        <p class="origen-blog-excerpt"><?php echo esc_html($excerpt); ?></p>
-                        <a href="<?php the_permalink(); ?>" class="origen-blog-link">
-                            <span>Leer Crónica</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </a>
+                        <?php if (has_post_thumbnail()) : ?>
+                            <div class="origen-blog-thumb">
+                                <?php the_post_thumbnail('large', ['class' => 'origen-blog-img', 'alt' => esc_attr(get_the_title())]); ?>
+                            </div>
+                        <?php endif; ?>
+                        <div class="origen-blog-body">
+                            <span class="origen-blog-date"><?php echo esc_html(strtoupper($date_formatted)); ?> · CRÓNICA 0<?php echo $counter++; ?></span>
+                            <h3 class="origen-blog-title"><?php the_title(); ?></h3>
+                            <p class="origen-blog-excerpt"><?php echo esc_html($excerpt); ?></p>
+                            <a href="<?php the_permalink(); ?>" class="origen-blog-link">
+                                <span>Leer Crónica</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
                     </article>
                     <?php
                 endwhile;

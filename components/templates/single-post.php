@@ -19,6 +19,12 @@ get_header();
                     <div class="origen-section-line"></div>
                 </header>
 
+                <?php if (has_post_thumbnail()) : ?>
+                    <div class="origen-article-hero-media">
+                        <?php the_post_thumbnail('full', ['class' => 'origen-article-hero-img', 'alt' => esc_attr(get_the_title())]); ?>
+                    </div>
+                <?php endif; ?>
+
                 <div class="origen-article-content">
                     <?php the_content(); ?>
                 </div>
