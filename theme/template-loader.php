@@ -50,7 +50,7 @@ class Template_Loader {
 
         // Si estamos viendo una entrada individual estándar del Blog (post)
         if (is_singular('post')) {
-            $theme_tpl = locate_template(['components/templates/single-post.php', 'single.php']);
+            $theme_tpl = locate_template(['components/templates/single-post.php', 'single-post.php']);
             if ($theme_tpl) {
                 return $theme_tpl;
             }
