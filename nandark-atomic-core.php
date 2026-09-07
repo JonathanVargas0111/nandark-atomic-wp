@@ -3,7 +3,7 @@
  * Plugin Name:       Nandark Atomic Core
  * Plugin URI:        https://nandark.com
  * Description:       Arquitectura de componentes atómicos, CPTs y optimización de alto rendimiento para WordPress asistido por IA (MCP).
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Nandark Studio (Felipe Vargas)
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-define('NANDARK_ATOMIC_VERSION', '1.0.0');
+define('NANDARK_ATOMIC_VERSION', '1.0.1');
 define('NANDARK_ATOMIC_PATH', plugin_dir_path(__FILE__));
 define('NANDARK_ATOMIC_URL', plugin_dir_url(__FILE__));
 

@@ -276,7 +276,19 @@ class Self_Updater {
             ], 403);
         }
 
-        wp_update_plugins();
+        // Forzar inyección manual del paquete en el site transient
+        $transient = get_site_transient('update_plugins');
+        if (!is_object($transient)) {
+            $transient = new \stdClass();
+        }
+        $obj = new \stdClass();
+        $obj->slug        = self::SLUG;
+        $obj->plugin      = self::MAIN_FILE;
+        $obj->new_version = ltrim($release->tag_name ?? '1.0.1', 'v');
+        $obj->url         = 'https://github.com/' . self::GITHUB_REPO;
+        $obj->package     = $package_url;
+        $transient->response[self::MAIN_FILE] = $obj;
+        set_site_transient('update_plugins', $transient);
 
         $skin = new \Automatic_Upgrader_Skin();
         $upgrader = new \Plugin_Upgrader($skin);
