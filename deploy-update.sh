@@ -8,13 +8,23 @@ set -e
 
 SITE_URL="${1:-http://nandark-lab.local}"
 FLAG="${2:-}"
-DEPLOY_KEY="${3:-nandark-secure-deploy-key-2026}"
+
+# El token NUNCA vive en este archivo: el repo es publico. Se toma del entorno.
+#   export NANDARK_DEPLOY_TOKEN="....."   (el mismo valor que en wp-config.php)
+DEPLOY_KEY="${3:-${NANDARK_DEPLOY_TOKEN:-}}"
+
+if [ -z "$DEPLOY_KEY" ]; then
+  echo "ERROR: falta el token de deploy." >&2
+  echo "  export NANDARK_DEPLOY_TOKEN='<el valor de NANDARK_DEPLOY_TOKEN en wp-config.php>'" >&2
+  echo "  o pasalo como tercer argumento." >&2
+  exit 1
+fi
 
 if [ "$FLAG" == "--bundle" ] || [ "$1" == "--bundle" ]; then
   TARGET_URL="$SITE_URL"
   if [ "$1" == "--bundle" ]; then
     TARGET_URL="${2:-http://nandark-lab.local}"
-    DEPLOY_KEY="${3:-nandark-secure-deploy-key-2026}"
+    DEPLOY_KEY="${3:-${NANDARK_DEPLOY_TOKEN:-$DEPLOY_KEY}}"
   fi
 
   echo "📦 Aprovisionando Bundle Completo de Nandark en: $TARGET_URL"

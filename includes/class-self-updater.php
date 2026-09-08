@@ -10,6 +10,12 @@ class Self_Updater {
     const SLUG        = 'nandark-atomic-core';
     const MAIN_FILE   = 'nandark-atomic-core/nandark-atomic-core.php';
 
+    /** Longitud minima exigida al token de deploy. */
+    const MIN_TOKEN_LENGTH = 32;
+
+    /** Estado de activacion previo al upgrade, para restaurarlo despues. */
+    private static $was_active = false;
+
     public static function init() {
         // 1. Hook para verificar si hay nueva versión (Transient de WP Updates)
         add_filter('pre_set_site_transient_update_plugins', [__CLASS__, 'check_update']);
@@ -17,7 +23,11 @@ class Self_Updater {
         // 2. Hook para detalles del plugin en el modal de WP
         add_filter('plugins_api', [__CLASS__, 'plugin_info'], 20, 3);
 
-        // 3. Hook para renombrar la carpeta del ZIP tras la actualización
+        // 3. Normalizar el nombre de la carpeta ANTES de que WP la instale, y reactivar despues.
+        //    Se trabaja sobre el directorio TEMPORAL del upgrader: este plugin nunca borra ni
+        //    mueve nada dentro de wp-content/plugins por su cuenta.
+        add_filter('upgrader_source_selection', [__CLASS__, 'rename_source_dir'], 10, 4);
+        add_filter('upgrader_pre_install', [__CLASS__, 'remember_active_state'], 10, 2);
         add_filter('upgrader_post_install', [__CLASS__, 'post_install'], 10, 3);
 
         // 4. Endpoint Webhook directo para actualización forzada instantánea
@@ -173,26 +183,111 @@ class Self_Updater {
     }
 
     /**
-     * Asegura que tras la descarga del ZIP de GitHub la carpeta destino sea 'nandark-atomic-core'
+     * ¿El paquete que esta procesando el upgrader es ESTE plugin?
+     *
+     * upgrader_source_selection / _pre_install / _post_install son hooks GLOBALES de
+     * WP_Upgrader::install_package(): los dispara tambien Theme_Upgrader, Language_Pack_Upgrader
+     * y la actualizacion de cualquier otro plugin. Sin esta guarda, los callbacks de abajo
+     * actuaban sobre paquetes ajenos.
+     *
+     * Solo Plugin_Upgrader::upgrade() setea $hook_extra['plugin'], asi que esto tambien
+     * excluye instalaciones nuevas y temas.
      */
-    public static function post_install($true, $hook_extra, $result) {
+    private static function is_our_package($hook_extra) {
+        return is_array($hook_extra)
+            && !empty($hook_extra['plugin'])
+            && $hook_extra['plugin'] === self::MAIN_FILE;
+    }
+
+    /**
+     * Normaliza el nombre de la carpeta descomprimida ANTES de instalarla.
+     *
+     * El zipball de la rama main se descomprime como 'nandark-atomic-wp-main'. Lo renombramos
+     * dentro del directorio temporal del upgrader, de modo que WordPress instale directamente
+     * en wp-content/plugins/nandark-atomic-core sin que nosotros toquemos el destino final.
+     *
+     * @return string|\WP_Error Ruta corregida, o WP_Error para que WP aborte y haga rollback.
+     */
+    public static function rename_source_dir($source, $remote_source, $upgrader = null, $hook_extra = []) {
         global $wp_filesystem;
 
-        if (is_wp_error($result)) {
-            return $result;
+        if (!self::is_our_package($hook_extra) || !$wp_filesystem) {
+            return $source;
         }
 
-        $proper_destination = WP_PLUGIN_DIR . '/' . self::SLUG;
+        $source = trailingslashit($source);
 
-        // Si la carpeta descomprimida tiene otro nombre (ej. nandark-atomic-wp-main), la movemos
-        if (isset($result['destination']) && $result['destination'] !== $proper_destination) {
-            $wp_filesystem->delete($proper_destination, true);
-            $wp_filesystem->move($result['destination'], $proper_destination);
-            $result['destination'] = $proper_destination;
+        // Ya viene con el nombre correcto (caso del asset nandark-atomic-core.zip): no tocar nada.
+        if (basename(untrailingslashit($source)) === self::SLUG) {
+            return $source;
         }
 
-        activate_plugin(self::MAIN_FILE);
-        return $result;
+        $corrected = trailingslashit($remote_source) . self::SLUG;
+
+        if ($wp_filesystem->exists($corrected)) {
+            $wp_filesystem->delete($corrected, true);
+        }
+
+        if (!$wp_filesystem->move(untrailingslashit($source), $corrected)) {
+            return new \WP_Error(
+                'nandark_rename_failed',
+                sprintf('Nandark Atomic: no se pudo normalizar la carpeta del paquete (%s).', esc_html($source))
+            );
+        }
+
+        return trailingslashit($corrected);
+    }
+
+    /**
+     * Recuerda si el plugin estaba activo antes del upgrade, para no "resucitarlo"
+     * cuando el admin lo desactivo a proposito.
+     */
+    public static function remember_active_state($response, $hook_extra) {
+        if (!self::is_our_package($hook_extra)) {
+            return $response;
+        }
+
+        if (!function_exists('is_plugin_active')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        self::$was_active = is_plugin_active(self::MAIN_FILE);
+
+        return $response;
+    }
+
+    /**
+     * Reactiva el plugin tras su propia actualizacion, solo si estaba activo antes.
+     *
+     * Devuelve $response (no $result): el valor de retorno de este filtro solo se usa para
+     * detectar un WP_Error, y core devuelve su propio $this->result de todos modos.
+     */
+    public static function post_install($response, $hook_extra, $result) {
+        if (!self::is_our_package($hook_extra) || is_wp_error($response)) {
+            return $response;
+        }
+
+        if (!self::$was_active) {
+            return $response;
+        }
+
+        if (!function_exists('activate_plugin')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        if (!file_exists(WP_PLUGIN_DIR . '/' . self::MAIN_FILE)) {
+            return new \WP_Error(
+                'nandark_missing_after_install',
+                'Nandark Atomic: el archivo principal no existe tras la instalacion.'
+            );
+        }
+
+        $activated = activate_plugin(self::MAIN_FILE);
+        if (is_wp_error($activated)) {
+            error_log('Nandark Atomic: fallo la reactivacion tras el update: ' . $activated->get_error_message());
+        }
+
+        return $response;
     }
 
     /**
@@ -219,6 +314,23 @@ class Self_Updater {
             return true;
         }
 
+        // Opción B: Token Bearer secreto.
+        //
+        // SIN default. Un secreto por defecto en el codigo es un secreto publico: el repo es
+        // abierto, asi que cualquiera podia disparar este endpoint. Si no hay token configurado
+        // en wp-config.php (NANDARK_DEPLOY_TOKEN) o en la option, el endpoint niega todo.
+        $secret_key = defined('NANDARK_DEPLOY_TOKEN')
+            ? NANDARK_DEPLOY_TOKEN
+            : get_option('nandark_deploy_token', '');
+
+        if (!is_string($secret_key) || strlen($secret_key) < self::MIN_TOKEN_LENGTH) {
+            return new \WP_Error(
+                'rest_forbidden',
+                'Deploy token no configurado. Definí NANDARK_DEPLOY_TOKEN en wp-config.php (mínimo ' . self::MIN_TOKEN_LENGTH . ' caracteres).',
+                ['status' => 403]
+            );
+        }
+
         // Rate limiting anti brute-force en memoria transitoria (5 intentos por IP cada 60s)
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $rate_key = 'nandark_update_rate_' . md5($ip);
@@ -230,19 +342,20 @@ class Self_Updater {
 
         set_transient($rate_key, $attempts + 1, 60);
 
-        // Opción B: Token Bearer secreto
         $auth_header = $request->get_header('authorization');
-        $secret_key  = defined('NANDARK_DEPLOY_TOKEN') ? NANDARK_DEPLOY_TOKEN : get_option('nandark_deploy_token', 'nandark-secure-deploy-key-2026');
-
         if (!$auth_header) {
             return false;
         }
 
-        $token = str_replace('Bearer ', '', trim($auth_header));
+        $token = trim(preg_replace('/^Bearer\s+/i', '', trim($auth_header)));
+        if ($token === '') {
+            return false;
+        }
+
         return hash_equals($secret_key, $token);
     }
 
-    public static function handle_direct_update() {
+    public static function handle_direct_update($request = null) {
         require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
         require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
         require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -257,6 +370,24 @@ class Self_Updater {
                 'success' => false,
                 'message' => 'No se pudo obtener información del último release de GitHub.',
             ], 502);
+        }
+
+        // Un upgrade borra y reinstala la carpeta del plugin. No lo hacemos "porque sí":
+        // si ya estamos en la última versión, no se toca el disco salvo ?force=1 explícito.
+        $force = $request instanceof \WP_REST_Request
+            ? filter_var($request->get_param('force'), FILTER_VALIDATE_BOOLEAN)
+            : false;
+
+        $remote_version = ltrim($release->tag_name ?? '', 'v');
+
+        if (!$force && $remote_version !== '' && version_compare($remote_version, NANDARK_ATOMIC_VERSION, '<=')) {
+            return new \WP_REST_Response([
+                'success'        => true,
+                'updated'        => false,
+                'message'        => 'Ya está en la última versión. Usá ?force=1 para reinstalar igual.',
+                'version'        => NANDARK_ATOMIC_VERSION,
+                'remote_version' => $remote_version,
+            ], 200);
         }
 
         $package_url = !empty($release->zipball_url) ? $release->zipball_url : '';
