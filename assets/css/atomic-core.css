@@ -331,14 +331,20 @@ body.origen-drawer-locked {
   display: flex;
   align-items: center;
 }
-.scrolly-canvas {
+.scrolly-backdrop {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
+  z-index: 0;
+}
+
+/* El fondo pasó de <canvas> con 240 frames a una sola <img> responsive.
+   object-fit cover reproduce el mismo encuadre que hacía drawImage a mano. */
+.scrolly-backdrop__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 1;
+  object-position: center;
+  display: block;
 }
 .scrolly-overlay {
   position: absolute;
@@ -1419,132 +1425,4 @@ body.origen-drawer-locked {
 .origen-article-back:hover {
   gap: 0.9rem;
   color: #ffffff;
-}
-
-
-
-/* ==========================================================================
-   Hero estático — una sola imagen.
-   Reemplaza al canvas de 240 frames (~55 MB por visita).
-   ========================================================================== */
-
-.nandark-hero {
-  position: relative;
-  min-height: 88vh;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-}
-
-.nandark-hero__media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.nandark-hero__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-}
-
-.nandark-hero__scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(8, 8, 10, 0.92) 0%,
-    rgba(8, 8, 10, 0.55) 45%,
-    rgba(8, 8, 10, 0.15) 100%
-  );
-}
-
-.nandark-hero__inner {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  padding-top: 6rem;
-  padding-bottom: 4.5rem;
-}
-
-.nandark-hero__card {
-  max-width: 46rem;
-}
-
-.nandark-hero__tag {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
-  margin-bottom: 1rem;
-}
-
-.nandark-hero__title {
-  margin: 0;
-  font-size: clamp(2.75rem, 9vw, 6rem);
-  line-height: 0.98;
-  letter-spacing: 0.02em;
-  color: #fff;
-}
-
-.nandark-hero__subtitle {
-  margin: 0.75rem 0 0;
-  font-size: clamp(1rem, 2.2vw, 1.35rem);
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.nandark-hero__rule {
-  width: 4rem;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.45);
-  margin: 1.75rem 0;
-}
-
-.nandark-hero__desc {
-  margin: 0;
-  max-width: 38rem;
-  font-size: 1rem;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.nandark-hero__cta {
-  display: inline-block;
-  margin-top: 2rem;
-  padding: 0.9rem 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  color: #fff;
-  text-decoration: none;
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.nandark-hero__cta:hover,
-.nandark-hero__cta:focus-visible {
-  background: #fff;
-  color: #000;
-}
-
-@media (max-width: 768px) {
-  .nandark-hero {
-    min-height: 78vh;
-  }
-  .nandark-hero__inner {
-    padding-top: 4rem;
-    padding-bottom: 3rem;
-  }
-}
-
-/* Respeta a quien pidió menos movimiento: acá no hay animación, pero dejamos
-   el hook por si el hero se reutiliza con transiciones. */
-@media (prefers-reduced-motion: reduce) {
-  .nandark-hero * {
-    animation: none !important;
-    transition: none !important;
-  }
 }

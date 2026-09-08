@@ -13,10 +13,9 @@ $img_url    = NANDARK_ATOMIC_URL . 'assets/images/';
     <!-- Navbar Organism -->
     <?php nandark_render('organisms/navbar'); ?>
 
-    <!-- Hero Organism: una sola imagen. El scrollytelling de 240 frames bajaba
-         ~55 MB por visitante para simular un video; sigue disponible como
-         'organisms/scrollytelling-hero' para quien lo quiera. -->
-    <?php nandark_render('organisms/hero-static'); ?>
+    <!-- Scrollytelling Hero: el recorrido de 4 tarjetas por scroll se mantiene;
+         el fondo pasó de un canvas de 240 frames a UNA sola imagen. -->
+    <?php nandark_render('organisms/scrollytelling-hero'); ?>
 
     <!-- Espacios Organism -->
     <?php nandark_render('organisms/spaces-grid', ['img_url' => $img_url]); ?>

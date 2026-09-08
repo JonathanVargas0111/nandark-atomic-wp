@@ -1,9 +1,15 @@
 <?php
 /**
- * Organismo: Scrollytelling Section
+ * Organismo: Scrollytelling Section.
+ *
+ * El recorrido por pasos (4 tarjetas que cambian con el scroll) SE MANTIENE.
+ * Lo que cambió es el fondo: antes era un canvas que iba dibujando 240 JPGs
+ * — ~55 MB por visitante — y ahora es UNA sola imagen fija detrás de las
+ * tarjetas. Misma narrativa, 210 veces menos peso.
+ *
  * Props:
- * - frames_url    (string) URL base de los frames
- * - frames_prefix (string) Prefijo del nombre de archivo
+ * - image_id  (int)    Attachment del fondo; por defecto lo resuelve nandark_hero_image()
+ * - image_url (string) URL directa, si no hay attachment
  */
 require_once NANDARK_ATOMIC_PATH . 'components/atoms/svg-icons.php';
 use NandarkAtomic\Icons\SVG;
@@ -14,13 +20,31 @@ if (function_exists('wp_enqueue_script')) {
     wp_enqueue_script('nandark-scrollytelling');
 }
 
-$nandark_frames  = nandark_frames_source();
-$frames_url      = $frames_url ?? $nandark_frames['base'];
-$frames_prefix   = $frames_prefix ?? $nandark_frames['prefix'];
+$nandark_hero = function_exists('nandark_hero_image') ? nandark_hero_image() : ['id' => null, 'url' => ''];
+$image_id     = isset($image_id) ? (int) $image_id : $nandark_hero['id'];
+$image_url    = isset($image_url) ? $image_url : $nandark_hero['url'];
 ?>
-<section id="scrollytelling-container" class="scrolly-section" data-frames-url="<?php echo esc_url($frames_url); ?>" data-frames-prefix="<?php echo esc_attr($frames_prefix); ?>">
+<section id="scrollytelling-container" class="scrolly-section">
     <div class="scrolly-sticky">
-        <canvas id="scrollytelling-canvas" class="scrolly-canvas"></canvas>
+        <div class="scrolly-backdrop" aria-hidden="true">
+            <?php
+            if ($image_id) {
+                // srcset/sizes: en móvil baja la variante chica, no la de 1920px.
+                echo wp_get_attachment_image($image_id, 'full', false, [
+                    'class'         => 'scrolly-backdrop__img',
+                    'alt'           => '',
+                    'fetchpriority' => 'high',
+                    'decoding'      => 'async',
+                    'sizes'         => '100vw',
+                ]);
+            } elseif ($image_url) {
+                printf(
+                    '<img class="scrolly-backdrop__img" src="%s" alt="" fetchpriority="high" decoding="async">',
+                    esc_url($image_url)
+                );
+            }
+            ?>
+        </div>
         <div class="scrolly-overlay"></div>
 
         <div class="nandark-container scrolly-ui-container">
