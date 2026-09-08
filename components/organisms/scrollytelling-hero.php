@@ -2,14 +2,17 @@
 /**
  * Organismo: Scrollytelling Section
  * Props:
- * - frames_url (string)
+ * - frames_url    (string) URL base de los frames
+ * - frames_prefix (string) Prefijo del nombre de archivo
  */
 require_once NANDARK_ATOMIC_PATH . 'components/atoms/svg-icons.php';
 use NandarkAtomic\Icons\SVG;
 
-$frames_url = $frames_url ?? (NANDARK_ATOMIC_URL . 'assets/frames/');
+$nandark_frames  = nandark_frames_source();
+$frames_url      = $frames_url ?? $nandark_frames['base'];
+$frames_prefix   = $frames_prefix ?? $nandark_frames['prefix'];
 ?>
-<section id="scrollytelling-container" class="scrolly-section" data-frames-url="<?php echo esc_url($frames_url); ?>">
+<section id="scrollytelling-container" class="scrolly-section" data-frames-url="<?php echo esc_url($frames_url); ?>" data-frames-prefix="<?php echo esc_attr($frames_prefix); ?>">
     <div class="scrolly-sticky">
         <canvas id="scrollytelling-canvas" class="scrolly-canvas"></canvas>
         <div class="scrolly-overlay"></div>

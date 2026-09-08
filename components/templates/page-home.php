@@ -6,7 +6,7 @@
 get_header();
 
 $img_url    = NANDARK_ATOMIC_URL . 'assets/images/';
-$frames_url = NANDARK_ATOMIC_URL . 'assets/frames/';
+$frames     = nandark_frames_source();
 ?>
 
 <main class="nandark-main nandark-home-page">
@@ -15,7 +15,7 @@ $frames_url = NANDARK_ATOMIC_URL . 'assets/frames/';
     <?php nandark_render('organisms/navbar'); ?>
 
     <!-- Scrollytelling Hero Organism -->
-    <?php nandark_render('organisms/scrollytelling-hero', ['frames_url' => $frames_url]); ?>
+    <?php nandark_render('organisms/scrollytelling-hero', ['frames_url' => $frames['base'], 'frames_prefix' => $frames['prefix']]); ?>
 
     <!-- Espacios Organism -->
     <?php nandark_render('organisms/spaces-grid', ['img_url' => $img_url]); ?>

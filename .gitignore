@@ -1,1 +1,5 @@
 assets/images/origen-hero-video.mp4
+
+# Los frames del scrollytelling viven en la media library de WordPress,
+# no en el repo. Ver nandark_frames_source() en nandark-atomic-core.php.
+assets/frames/

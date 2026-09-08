@@ -3,7 +3,7 @@
  * Plugin Name:       Nandark Atomic Core
  * Plugin URI:        https://nandark.com
  * Description:       Arquitectura de componentes atómicos, CPTs y optimización de alto rendimiento para WordPress asistido por IA (MCP).
- * Version:           1.0.3
+ * Version:           1.0.4
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Nandark Studio (Felipe Vargas)
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-define('NANDARK_ATOMIC_VERSION', '1.0.3');
+define('NANDARK_ATOMIC_VERSION', '1.0.4');
 define('NANDARK_ATOMIC_PATH', plugin_dir_path(__FILE__));
 define('NANDARK_ATOMIC_URL', plugin_dir_url(__FILE__));
 
@@ -55,6 +55,59 @@ function nandark_render($component_path, $props = [], $echo = true) {
     }
 
     include $file;
+}
+
+/**
+ * Resuelve de dónde salen los frames del scrollytelling.
+ *
+ * Antes vivían versionados en assets/frames/ dentro del plugin: 240 JPGs, 51 MB.
+ * Eso hacía que el plugin pesara 54 MB y que CADA auto-update descargara y
+ * descomprimiera esos 54 MB en un shared hosting con max_execution_time de 30s
+ * — la receta exacta de una actualización que muere a la mitad.
+ *
+ * Ahora viven en la media library (subidos por MCP) y el plugin los descubre
+ * solo: busca el attachment 'nandark-frame-0001' y deriva la URL base de ahí.
+ * Cero configuración manual. El resultado se cachea 24 h.
+ *
+ * @return array{base:string, prefix:string}
+ */
+function nandark_frames_source() {
+    $legacy = [
+        'base'   => NANDARK_ATOMIC_URL . 'assets/frames/',
+        'prefix' => 'frame_',
+    ];
+
+    // Override explícito, por si algún sitio los sirve desde un CDN.
+    $base = get_option('nandark_frames_base_url', '');
+    if (!empty($base)) {
+        return [
+            'base'   => trailingslashit($base),
+            'prefix' => get_option('nandark_frames_prefix', 'nandark-frame-'),
+        ];
+    }
+
+    $cached = get_transient('nandark_frames_source');
+    if (is_array($cached)) {
+        return $cached;
+    }
+
+    $prefix = 'nandark-frame-';
+    $first  = get_page_by_path($prefix . '0001', OBJECT, 'attachment');
+
+    if ($first) {
+        $url = wp_get_attachment_url($first->ID);
+        if ($url) {
+            $resolved = [
+                'base'   => trailingslashit(dirname($url)),
+                'prefix' => $prefix,
+            ];
+            set_transient('nandark_frames_source', $resolved, DAY_IN_SECONDS);
+            return $resolved;
+        }
+    }
+
+    // Sin frames en la mediateca: el hero degrada a la primera imagen fija.
+    return $legacy;
 }
 
 /**

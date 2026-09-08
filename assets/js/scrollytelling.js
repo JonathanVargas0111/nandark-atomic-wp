@@ -13,10 +13,12 @@
   let isTicking = false;
 
   const framesBaseUrl = container.dataset.framesUrl || '';
+  // Los frames viven en la media library; el prefijo lo resuelve el servidor.
+  const framesPrefix = container.dataset.framesPrefix || 'frame_';
 
   const getFrameUrl = (index) => {
     const pad = String(index).padStart(4, '0');
-    return `${framesBaseUrl}frame_${pad}.jpg`;
+    return `${framesBaseUrl}${framesPrefix}${pad}.jpg`;
   };
 
   const loadSingleFrame = (index) => {
