@@ -299,7 +299,56 @@ class Self_Updater {
             'methods'             => 'POST',
             'callback'            => [__CLASS__, 'handle_direct_update'],
             'permission_callback' => [__CLASS__, 'verify_webhook_token'],
+            'args'                => [
+                'source' => [
+                    'type'        => 'string',
+                    'enum'        => ['release', 'main'],
+                    'default'     => 'main',
+                    'description' => 'De dónde traer el código: el último GitHub Release, o directamente la rama main.',
+                ],
+                'force' => [
+                    'type'        => 'boolean',
+                    'default'     => false,
+                    'description' => 'Reinstalar aunque la versión remota sea igual o menor a la instalada.',
+                ],
+            ],
         ]);
+    }
+
+    /**
+     * Lee la versión declarada en el header del plugin en la rama main.
+     *
+     * Permite el flujo simple —"bajá lo último de git e instalá"— sin obligar a
+     * cortar un GitHub Release en cada push: comparamos contra el header del
+     * archivo en main en vez de contra un tag.
+     *
+     * @return string|null Versión, o null si no se pudo leer.
+     */
+    private static function get_main_branch_version() {
+        $url = 'https://raw.githubusercontent.com/' . self::GITHUB_REPO . '/main/nandark-atomic-core.php';
+
+        $args = [
+            'timeout' => 10,
+            'headers' => ['User-Agent' => 'WordPress/' . get_bloginfo('version') . '; ' . home_url()],
+        ];
+
+        $token = defined('NANDARK_GITHUB_TOKEN') ? NANDARK_GITHUB_TOKEN : get_option('nandark_github_token', '');
+        if (!empty($token)) {
+            $args['headers']['Authorization'] = 'Bearer ' . $token;
+        }
+
+        $response = wp_remote_get($url, $args);
+
+        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+            return null;
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        if (preg_match('/^\s*\*\s*Version:\s*(.+)$/mi', $body, $m)) {
+            return trim($m[1]);
+        }
+
+        return null;
     }
 
     /**
@@ -364,38 +413,77 @@ class Self_Updater {
         delete_transient('nandark_atomic_latest_release');
         delete_site_transient('update_plugins');
 
-        $release = self::get_latest_release();
-        if (!$release) {
-            return new \WP_REST_Response([
-                'success' => false,
-                'message' => 'No se pudo obtener información del último release de GitHub.',
-            ], 502);
-        }
-
-        // Un upgrade borra y reinstala la carpeta del plugin. No lo hacemos "porque sí":
-        // si ya estamos en la última versión, no se toca el disco salvo ?force=1 explícito.
         $force = $request instanceof \WP_REST_Request
             ? filter_var($request->get_param('force'), FILTER_VALIDATE_BOOLEAN)
             : false;
 
-        $remote_version = ltrim($release->tag_name ?? '', 'v');
+        $source = $request instanceof \WP_REST_Request
+            ? (string) $request->get_param('source')
+            : 'main';
 
-        if (!$force && $remote_version !== '' && version_compare($remote_version, NANDARK_ATOMIC_VERSION, '<=')) {
-            return new \WP_REST_Response([
-                'success'        => true,
-                'updated'        => false,
-                'message'        => 'Ya está en la última versión. Usá ?force=1 para reinstalar igual.',
-                'version'        => NANDARK_ATOMIC_VERSION,
-                'remote_version' => $remote_version,
-            ], 200);
+        if ($source !== 'release') {
+            $source = 'main';
         }
 
-        $package_url = !empty($release->zipball_url) ? $release->zipball_url : '';
-        if (!empty($release->assets) && is_array($release->assets)) {
-            foreach ($release->assets as $asset) {
-                if (str_ends_with($asset->name, '.zip')) {
-                    $package_url = $asset->browser_download_url;
-                    break;
+        // -------------------------------------------------------------------
+        // Camino simple y por defecto: "bajá lo último de git e instalá".
+        // No exige cortar un GitHub Release en cada push. La versión se compara
+        // contra el header del archivo en main, no contra un tag.
+        // -------------------------------------------------------------------
+        if ($source === 'main') {
+            $remote_version = self::get_main_branch_version();
+
+            if ($remote_version === null) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => 'No se pudo leer la versión del plugin en la rama main de GitHub.',
+                ], 502);
+            }
+
+            if (!$force && version_compare($remote_version, NANDARK_ATOMIC_VERSION, '<=')) {
+                return new \WP_REST_Response([
+                    'success'        => true,
+                    'updated'        => false,
+                    'source'         => 'main',
+                    'message'        => 'Ya está en la última versión de main. Usá force=1 para reinstalar igual.',
+                    'version'        => NANDARK_ATOMIC_VERSION,
+                    'remote_version' => $remote_version,
+                ], 200);
+            }
+
+            $package_url = 'https://github.com/' . self::GITHUB_REPO . '/archive/refs/heads/main.zip';
+            $release     = (object) ['tag_name' => 'v' . $remote_version];
+        } else {
+            $release = self::get_latest_release();
+            if (!$release) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => 'No se pudo obtener información del último release de GitHub.',
+                ], 502);
+            }
+
+            // Un upgrade borra y reinstala la carpeta del plugin. No lo hacemos "porque sí":
+            // si ya estamos en la última versión, no se toca el disco salvo force=1 explícito.
+            $remote_version = ltrim($release->tag_name ?? '', 'v');
+
+            if (!$force && $remote_version !== '' && version_compare($remote_version, NANDARK_ATOMIC_VERSION, '<=')) {
+                return new \WP_REST_Response([
+                    'success'        => true,
+                    'updated'        => false,
+                    'source'         => 'release',
+                    'message'        => 'Ya está en la última versión. Usá force=1 para reinstalar igual.',
+                    'version'        => NANDARK_ATOMIC_VERSION,
+                    'remote_version' => $remote_version,
+                ], 200);
+            }
+
+            $package_url = !empty($release->zipball_url) ? $release->zipball_url : '';
+            if (!empty($release->assets) && is_array($release->assets)) {
+                foreach ($release->assets as $asset) {
+                    if (str_ends_with($asset->name, '.zip')) {
+                        $package_url = $asset->browser_download_url;
+                        break;
+                    }
                 }
             }
         }

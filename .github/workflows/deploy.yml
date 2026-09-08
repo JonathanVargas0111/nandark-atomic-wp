@@ -5,70 +5,114 @@ on:
     branches:
       - main
 
+env:
+  SITE: https://darkturquoise-vulture-577559.hostingersite.com
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Remote Self-Update
+      - uses: actions/checkout@v4
+
+      - name: Leer la versión que estamos desplegando
+        id: ver
+        run: |
+          VERSION=$(grep -m1 -E '^\s*\*\s*Version:' nandark-atomic-core.php | sed -E 's/.*Version:[[:space:]]*//' | tr -d '[:space:]')
+          if [ -z "$VERSION" ]; then
+            echo "::error::No se pudo leer la Version del header de nandark-atomic-core.php"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Desplegando v$VERSION"
+
+      - name: Disparar self-update desde la rama main
         env:
           DEPLOY_TOKEN: ${{ secrets.NANDARK_DEPLOY_TOKEN }}
         run: |
           if [ -z "$DEPLOY_TOKEN" ]; then
-            echo "::error::NANDARK_DEPLOY_TOKEN secret is not set in GitHub repository secrets."
+            echo "::error::Falta el secret NANDARK_DEPLOY_TOKEN."
             exit 1
           fi
 
-          echo "Disparando self-update en Hostinger..."
+          # source=main: instala lo último de la rama, sin exigir un GitHub Release.
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             -H "Authorization: Bearer $DEPLOY_TOKEN" \
-            "https://darkturquoise-vulture-577559.hostingersite.com/wp-json/nandark/v1/self-update")
+            "$SITE/wp-json/nandark/v1/self-update?source=main")
 
           HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
           BODY=$(echo "$RESPONSE" | sed '$d')
 
-          echo "Response Body: $BODY"
-          echo "HTTP Status: $HTTP_STATUS"
+          echo "Body:   $BODY"
+          echo "Status: $HTTP_STATUS"
 
           if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "::error::Self-update failed with status $HTTP_STATUS"
+            echo "::error::self-update devolvió $HTTP_STATUS"
             exit 1
           fi
 
-      - name: Purge LiteSpeed Cache via MCP
+          # Un 200 NO alcanza: el endpoint responde 200 con updated:false cuando
+          # decide no tocar nada. Sin este chequeo el deploy "pasa" sin desplegar.
+          if echo "$BODY" | grep -q '"updated":false'; then
+            echo "::warning::El servidor dice que ya estaba al día. No se instaló nada."
+          fi
+
+      - name: Purgar caché de LiteSpeed vía MCP
         env:
           MCP_TOKEN: ${{ secrets.WP_MCP_TOKEN }}
         run: |
           if [ -z "$MCP_TOKEN" ]; then
-            echo "MCP token not configured, skipping automated cache purge."
+            echo "Sin WP_MCP_TOKEN: se saltea el purgado."
             exit 0
           fi
 
-          echo "Purgando caché de LiteSpeed vía MCP..."
-          INIT_RESP=$(curl -s -i -X POST \
+          MCP="$SITE/wp-json/mcp/mcp-adapter-default-server"
+          # El header Accept es obligatorio en streamable HTTP; sin él el server
+          # puede rechazar el handshake.
+          ACCEPT="application/json, text/event-stream"
+
+          SESSION_ID=$(curl -s -D - -o /dev/null -X POST "$MCP" \
             -H "Authorization: Bearer $MCP_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"capabilities": {}, "protocolVersion": "2024-11-05", "clientInfo": {"name": "github-actions", "version": "1.0"}}}' \
-            "https://darkturquoise-vulture-577559.hostingersite.com/wp-json/mcp/mcp-adapter-default-server")
+            -H "Accept: $ACCEPT" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"github-actions","version":"1.0"}}}' \
+            | grep -i "mcp-session-id" | tr -d '\r' | awk '{print $2}')
 
-          SESSION_ID=$(echo "$INIT_RESP" | grep -i "mcp-session-id:" | tr -d '\r' | awk '{print $2}')
-
-          if [ -n "$SESSION_ID" ]; then
-            curl -s -X POST \
-              -H "Authorization: Bearer $MCP_TOKEN" \
-              -H "Mcp-Session-Id: $SESSION_ID" \
-              -H "Content-Type: application/json" \
-              -d '{"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "mcp-adapter-execute-ability", "arguments": {"ability_name": "ewpa/clear-cache", "parameters": {}}}}' \
-              "https://darkturquoise-vulture-577559.hostingersite.com/wp-json/mcp/mcp-adapter-default-server"
-            echo "Cache purge triggered successfully."
+          if [ -z "$SESSION_ID" ]; then
+            echo "::warning::No se obtuvo Mcp-Session-Id. Se saltea el purgado."
+            exit 0
           fi
 
-      - name: Verify Live Site Status
+          curl -s -o /dev/null -X POST "$MCP" \
+            -H "Authorization: Bearer $MCP_TOKEN" -H "Content-Type: application/json" \
+            -H "Accept: $ACCEPT" -H "Mcp-Session-Id: $SESSION_ID" \
+            -d '{"jsonrpc":"2.0","method":"notifications/initialized"}'
+
+          curl -s -X POST "$MCP" \
+            -H "Authorization: Bearer $MCP_TOKEN" -H "Content-Type: application/json" \
+            -H "Accept: $ACCEPT" -H "Mcp-Session-Id: $SESSION_ID" \
+            -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"mcp-adapter-execute-ability","arguments":{"ability_name":"ewpa/clear-cache","parameters":{}}}}'
+          echo "Caché purgada."
+
+      - name: Verificar que la versión NUEVA esté sirviendo
         run: |
-          echo "Verificando respuesta del sitio..."
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://darkturquoise-vulture-577559.hostingersite.com/")
-          echo "Live Site HTTP Status: $STATUS"
-          if [ "$STATUS" -ne 200 ]; then
-            echo "::error::Site did not return 200 OK after deploy."
+          EXPECTED="${{ steps.ver.outputs.version }}"
+
+          # Cache-buster: LiteSpeed puede servir HTML viejo y hacer pasar un
+          # deploy que nunca ocurrió. Un 200 en / no prueba absolutamente nada.
+          LIVE=$(curl -s "$SITE/wp-json/nandark/v1/config?cb=$GITHUB_RUN_ID" \
+                 | grep -o '"version":"[^"]*"' | cut -d'"' -f4)
+
+          echo "esperada: $EXPECTED | en el sitio: ${LIVE:-<sin respuesta>}"
+
+          if [ "$LIVE" != "$EXPECTED" ]; then
+            echo "::error::El sitio sirve '$LIVE' y esperábamos '$EXPECTED'. El deploy NO llegó."
             exit 1
           fi
-          echo "Deploy y verificación completados con éxito."
+
+          HOME_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$SITE/?cb=$GITHUB_RUN_ID")
+          if [ "$HOME_STATUS" -ne 200 ]; then
+            echo "::error::La home devolvió $HOME_STATUS"
+            exit 1
+          fi
+
+          echo "Deploy verificado: v$EXPECTED sirviendo y home en 200."
