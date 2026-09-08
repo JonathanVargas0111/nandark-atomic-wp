@@ -3,7 +3,7 @@
  * Plugin Name:       Nandark Atomic Core
  * Plugin URI:        https://nandark.com
  * Description:       Arquitectura de componentes atómicos, CPTs y optimización de alto rendimiento para WordPress asistido por IA (MCP).
- * Version:           1.0.5
+ * Version:           1.0.6
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Nandark Studio (Felipe Vargas)
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-define('NANDARK_ATOMIC_VERSION', '1.0.5');
+define('NANDARK_ATOMIC_VERSION', '1.0.6');
 define('NANDARK_ATOMIC_PATH', plugin_dir_path(__FILE__));
 define('NANDARK_ATOMIC_URL', plugin_dir_url(__FILE__));
 
@@ -108,6 +108,47 @@ function nandark_frames_source() {
 
     // Sin frames en la mediateca: el hero degrada a la primera imagen fija.
     return $legacy;
+}
+
+/**
+ * Resuelve LA imagen del hero estático.
+ *
+ * El hero de 240 frames simulaba un video y le costaba ~55 MB de descarga a cada
+ * visitante. Una sola imagen hace el mismo trabajo visual por 240 veces menos.
+ *
+ * Devuelve el ID del attachment además de la URL: con el ID podemos usar
+ * wp_get_attachment_image(), que emite srcset y sizes, así un celular se baja la
+ * versión chica en vez de la de 1920px. Servirla desde la media library también
+ * permite que LiteSpeed la convierta a WebP — cosa imposible para un archivo
+ * que viva dentro del plugin.
+ *
+ * @return array{id:int|null, url:string}
+ */
+function nandark_hero_image() {
+    $override = get_option('nandark_hero_image_url', '');
+    if (!empty($override)) {
+        return ['id' => null, 'url' => $override];
+    }
+
+    $cached = get_transient('nandark_hero_image');
+    if (is_array($cached)) {
+        return $cached;
+    }
+
+    $slug = apply_filters('nandark_hero_image_slug', 'nandark-frame-0001');
+    $att  = get_page_by_path($slug, OBJECT, 'attachment');
+
+    if ($att) {
+        $url = wp_get_attachment_url($att->ID);
+        if ($url) {
+            $resolved = ['id' => (int) $att->ID, 'url' => $url];
+            set_transient('nandark_hero_image', $resolved, DAY_IN_SECONDS);
+            return $resolved;
+        }
+    }
+
+    // Sin nada en la mediateca: la imagen que viene con el plugin.
+    return ['id' => null, 'url' => NANDARK_ATOMIC_URL . 'assets/images/01-hero-lounge.jpg'];
 }
 
 /**

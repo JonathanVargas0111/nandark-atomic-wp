@@ -8,6 +8,12 @@
 require_once NANDARK_ATOMIC_PATH . 'components/atoms/svg-icons.php';
 use NandarkAtomic\Icons\SVG;
 
+// El script se registra en Assets_Loader y se encola acá: así solo viaja a las
+// páginas donde este organismo realmente se dibuja.
+if (function_exists('wp_enqueue_script')) {
+    wp_enqueue_script('nandark-scrollytelling');
+}
+
 $nandark_frames  = nandark_frames_source();
 $frames_url      = $frames_url ?? $nandark_frames['base'];
 $frames_prefix   = $frames_prefix ?? $nandark_frames['prefix'];

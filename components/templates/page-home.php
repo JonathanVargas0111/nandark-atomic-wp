@@ -6,7 +6,6 @@
 get_header();
 
 $img_url    = NANDARK_ATOMIC_URL . 'assets/images/';
-$frames     = nandark_frames_source();
 ?>
 
 <main class="nandark-main nandark-home-page">
@@ -14,8 +13,10 @@ $frames     = nandark_frames_source();
     <!-- Navbar Organism -->
     <?php nandark_render('organisms/navbar'); ?>
 
-    <!-- Scrollytelling Hero Organism -->
-    <?php nandark_render('organisms/scrollytelling-hero', ['frames_url' => $frames['base'], 'frames_prefix' => $frames['prefix']]); ?>
+    <!-- Hero Organism: una sola imagen. El scrollytelling de 240 frames bajaba
+         ~55 MB por visitante para simular un video; sigue disponible como
+         'organisms/scrollytelling-hero' para quien lo quiera. -->
+    <?php nandark_render('organisms/hero-static'); ?>
 
     <!-- Espacios Organism -->
     <?php nandark_render('organisms/spaces-grid', ['img_url' => $img_url]); ?>

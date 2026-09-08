@@ -25,8 +25,11 @@ class Assets_Loader {
             wp_enqueue_style('nandark-theme-skin', get_stylesheet_uri(), ['nandark-atomic-core'], wp_get_theme()->get('Version'));
         }
 
-        // Encolar script interactivo de scrollytelling (solo si existe el contenedor en la página)
-        wp_enqueue_script(
+        // Se REGISTRA, no se encola: el organismo scrollytelling-hero hace el
+        // enqueue cuando realmente se renderiza. Antes se bajaba en cada página
+        // del sitio, incluso donde no hay canvas. (El comentario viejo decía
+        // "solo si existe el contenedor" y no era cierto.)
+        wp_register_script(
             'nandark-scrollytelling',
             NANDARK_ATOMIC_URL . 'assets/js/scrollytelling.js',
             [],
