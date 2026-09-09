@@ -25,7 +25,11 @@ class Seo_Schema_Manager {
         }
 
         $site_url = home_url('/');
-        $img_url  = NANDARK_ATOMIC_URL . 'assets/images/hero_lounge_interior_1788380532462.jpg';
+        // La imagen se resuelve por la mediateca (nandark_hero_image), no por una ruta
+        // fija: el archivo que estaba escrito a mano aca no existe desde hace meses y
+        // og:image servia un 404, o sea cero preview al compartir el sitio.
+        $hero     = function_exists('nandark_hero_image') ? nandark_hero_image() : ['id' => null, 'url' => ''];
+        $img_url  = $hero['url'];
 
         $schema = [
             '@context'         => 'https://schema.org',
@@ -109,6 +113,11 @@ class Seo_Schema_Manager {
         ];
 
         echo "\n<!-- 🧠 Nandark GEO / AEO & Schema.org JSON-LD (Search & AI Ready) -->\n";
+        // Una clave "image": null es peor que no tenerla: Google la lee como dato invalido.
+        if ($img_url === '') {
+            unset($schema['image']);
+        }
+
         echo '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "</script>\n";
     }
 
@@ -121,7 +130,11 @@ class Seo_Schema_Manager {
         }
 
         $site_url = home_url('/');
-        $img_url  = NANDARK_ATOMIC_URL . 'assets/images/hero_lounge_interior_1788380532462.jpg';
+        // La imagen se resuelve por la mediateca (nandark_hero_image), no por una ruta
+        // fija: el archivo que estaba escrito a mano aca no existe desde hace meses y
+        // og:image servia un 404, o sea cero preview al compartir el sitio.
+        $hero     = function_exists('nandark_hero_image') ? nandark_hero_image() : ['id' => null, 'url' => ''];
+        $img_url  = $hero['url'];
         $title    = 'ORIGEN Bogotá · Cocina de Autor, Mixología & Rooftop Lounge';
         $desc     = 'Experiencia gastronómica contemporánea, scrollytelling sensorial y reservas privadas en el corazón de Bogotá.';
 
@@ -131,12 +144,19 @@ class Seo_Schema_Manager {
         echo '<meta property="og:title" content="' . esc_attr($title) . '" />' . "\n";
         echo '<meta property="og:description" content="' . esc_attr($desc) . '" />' . "\n";
         echo '<meta property="og:url" content="' . esc_url($site_url) . '" />' . "\n";
-        echo '<meta property="og:image" content="' . esc_url($img_url) . '" />' . "\n";
-        echo '<meta property="og:image:width" content="1200" />' . "\n";
-        echo '<meta property="og:image:height" content="630" />' . "\n";
+        if ($img_url !== '') {
+            echo '<meta property="og:image" content="' . esc_url($img_url) . '" />' . "\n";
+        }
+        $dims = !empty($hero['id']) ? wp_get_attachment_image_src((int) $hero['id'], 'full') : null;
+        if (is_array($dims) && !empty($dims[1]) && !empty($dims[2])) {
+            echo '<meta property="og:image:width" content="' . (int) $dims[1] . '" />' . "\n";
+            echo '<meta property="og:image:height" content="' . (int) $dims[2] . '" />' . "\n";
+        }
         echo '<meta name="twitter:card" content="summary_large_image" />' . "\n";
         echo '<meta name="twitter:title" content="' . esc_attr($title) . '" />' . "\n";
         echo '<meta name="twitter:description" content="' . esc_attr($desc) . '" />' . "\n";
-        echo '<meta name="twitter:image" content="' . esc_url($img_url) . '" />' . "\n";
+        if ($img_url !== '') {
+            echo '<meta name="twitter:image" content="' . esc_url($img_url) . '" />' . "\n";
+        }
     }
 }
