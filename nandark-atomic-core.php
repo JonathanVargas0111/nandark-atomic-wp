@@ -3,7 +3,7 @@
  * Plugin Name:       Nandark Atomic Core
  * Plugin URI:        https://nandark.com
  * Description:       Arquitectura de componentes atómicos, CPTs y optimización de alto rendimiento para WordPress asistido por IA (MCP).
- * Version:           1.0.8
+ * Version:           1.0.9
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Nandark Studio (Felipe Vargas)
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-define('NANDARK_ATOMIC_VERSION', '1.0.8');
+define('NANDARK_ATOMIC_VERSION', '1.0.9');
 define('NANDARK_ATOMIC_PATH', plugin_dir_path(__FILE__));
 define('NANDARK_ATOMIC_URL', plugin_dir_url(__FILE__));
 
@@ -161,6 +161,7 @@ require_once NANDARK_ATOMIC_PATH . 'includes/class-bundle-manager.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-performance-optimizer.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-seo-schema-manager.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-agent-audit.php';
+require_once NANDARK_ATOMIC_PATH . 'includes/class-content-audit.php';
 require_once NANDARK_ATOMIC_PATH . 'theme/template-loader.php';
 
 // Capa Backend / API & Servicios
@@ -168,6 +169,10 @@ require_once NANDARK_ATOMIC_PATH . 'api/services/class-whatsapp-service.php';
 require_once NANDARK_ATOMIC_PATH . 'api/services/class-booking-service.php';
 require_once NANDARK_ATOMIC_PATH . 'api/class-rest-api.php';
 require_once NANDARK_ATOMIC_PATH . 'api/class-graphql-schema.php';
+
+// Las abilities se enganchan al cargar, no en plugins_loaded: el registro de core
+// es perezoso y si alguien lo toca antes, la ability queda sin registrar y en silencio.
+\NandarkAtomic\Content_Audit::init();
 
 // Inicialización de módulos
 add_action('plugins_loaded', function () {
