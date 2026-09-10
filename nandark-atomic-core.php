@@ -3,7 +3,7 @@
  * Plugin Name:       Nandark Atomic Core
  * Plugin URI:        https://nandark.com
  * Description:       Arquitectura de componentes atómicos, CPTs y optimización de alto rendimiento para WordPress asistido por IA (MCP).
- * Version:           1.0.9
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Nandark Studio (Felipe Vargas)
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-define('NANDARK_ATOMIC_VERSION', '1.0.9');
+define('NANDARK_ATOMIC_VERSION', '1.1.0');
 define('NANDARK_ATOMIC_PATH', plugin_dir_path(__FILE__));
 define('NANDARK_ATOMIC_URL', plugin_dir_url(__FILE__));
 
@@ -162,6 +162,8 @@ require_once NANDARK_ATOMIC_PATH . 'includes/class-performance-optimizer.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-seo-schema-manager.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-agent-audit.php';
 require_once NANDARK_ATOMIC_PATH . 'includes/class-content-audit.php';
+require_once NANDARK_ATOMIC_PATH . 'includes/class-human-gate.php';
+require_once NANDARK_ATOMIC_PATH . 'includes/class-gated-actions.php';
 require_once NANDARK_ATOMIC_PATH . 'theme/template-loader.php';
 
 // Capa Backend / API & Servicios
@@ -173,12 +175,14 @@ require_once NANDARK_ATOMIC_PATH . 'api/class-graphql-schema.php';
 // Las abilities se enganchan al cargar, no en plugins_loaded: el registro de core
 // es perezoso y si alguien lo toca antes, la ability queda sin registrar y en silencio.
 \NandarkAtomic\Content_Audit::init();
+\NandarkAtomic\Gated_Actions::init();
 
 // Inicialización de módulos
 add_action('plugins_loaded', function () {
     \NandarkAtomic\Performance_Optimizer::init();
     \NandarkAtomic\Seo_Schema_Manager::init();
     \NandarkAtomic\Agent_Audit::init();
+    \NandarkAtomic\Human_Gate::init();
     \NandarkAtomic\Assets_Loader::init();
     \NandarkAtomic\CPT_Manager::init();
     \NandarkAtomic\Self_Updater::init();
