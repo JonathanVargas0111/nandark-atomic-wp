@@ -293,8 +293,11 @@ class Gated_Actions {
                 'type'       => 'object',
                 'properties' => [
                     'proposal_id' => ['type' => 'integer'],
+                    'type'        => ['type' => 'string'],
                     'status'      => ['type' => 'string'],
-                    'result'      => ['type' => 'string'],
+                    'expires_at'  => ['type' => 'string'],
+                    'result'      => ['type' => ['string', 'null']],
+                    'preview'     => ['type' => 'object'],
                 ],
                 'required'   => ['proposal_id', 'status'],
             ],
