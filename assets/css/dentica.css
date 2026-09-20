@@ -1,0 +1,258 @@
+/*
+Theme Name: Déntica Clinic Theme
+Theme URI: https://nandark.com
+Author: Nandark Studio (Felipe Vargas)
+Author URI: https://nandark.com
+Description: Tema editorial de alta gama para odontología estética y rehabilitación oral. Desarrollado para Clínica Déntica by Cristina Suaza sobre el motor Nandark Atomic Core.
+Version: 1.0.0
+Text Domain: dentica-theme
+*/
+
+:root {
+  --dentica-bg: #f8fafc;
+  --dentica-surface: #ffffff;
+  --dentica-slate: #0f172a;
+  --dentica-muted: #64748b;
+  --dentica-teal: #0d9488;
+  --dentica-teal-hover: #0f766e;
+  --dentica-border: #e2e8f0;
+  --dentica-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --dentica-font-serif: "Playfair Display", Georgia, serif;
+}
+
+body {
+  background-color: var(--dentica-bg);
+  color: var(--dentica-slate);
+  font-family: var(--dentica-font-sans);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dentica-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header / Nav */
+.dentica-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--dentica-border);
+  padding: 18px 0;
+}
+.dentica-header__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dentica-brand {
+  text-decoration: none;
+  color: var(--dentica-slate);
+}
+.dentica-brand__title {
+  font-family: var(--dentica-font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+.dentica-brand__sub {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--dentica-teal);
+  font-weight: 600;
+}
+.dentica-btn-wa {
+  background: var(--dentica-teal);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.dentica-btn-wa:hover {
+  background: var(--dentica-teal-hover);
+  transform: translateY(-1px);
+}
+
+/* Hero */
+.dentica-hero {
+  padding: 90px 0 70px;
+  text-align: center;
+  border-bottom: 1px solid var(--dentica-border);
+  background: radial-gradient(circle at 50% 10%, rgba(13, 148, 136, 0.05) 0%, transparent 60%);
+}
+.dentica-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid var(--dentica-border);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dentica-slate);
+  margin-bottom: 24px;
+}
+.dentica-hero__title {
+  font-family: var(--dentica-font-serif);
+  font-size: 48px;
+  line-height: 1.15;
+  color: var(--dentica-slate);
+  max-width: 820px;
+  margin: 0 auto 20px;
+  font-weight: 700;
+}
+.dentica-hero__desc {
+  font-size: 18px;
+  color: var(--dentica-muted);
+  max-width: 640px;
+  margin: 0 auto 36px;
+}
+.dentica-hero__actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  align-items: center;
+}
+.dentica-hero__rating {
+  margin-top: 30px;
+  font-size: 13px;
+  color: var(--dentica-muted);
+}
+.dentica-hero__rating strong {
+  color: var(--dentica-slate);
+}
+
+/* Tratamientos */
+.dentica-section {
+  padding: 80px 0;
+}
+.dentica-section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+.dentica-section-title {
+  font-family: var(--dentica-font-serif);
+  font-size: 34px;
+  margin: 0 0 12px;
+}
+.dentica-section-subtitle {
+  color: var(--dentica-muted);
+  font-size: 16px;
+  max-width: 580px;
+  margin: 0 auto;
+}
+.dentica-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+.dentica-card {
+  background: var(--dentica-surface);
+  border: 1px solid var(--dentica-border);
+  border-radius: 12px;
+  padding: 32px;
+  transition: all 0.2s ease;
+}
+.dentica-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  border-color: var(--dentica-teal);
+}
+.dentica-card__num {
+  font-family: var(--dentica-font-serif);
+  font-size: 20px;
+  color: var(--dentica-teal);
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+.dentica-card__title {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+.dentica-card__text {
+  font-size: 14px;
+  color: var(--dentica-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Filosofía */
+.dentica-about {
+  background: #ffffff;
+  border-top: 1px solid var(--dentica-border);
+  border-bottom: 1px solid var(--dentica-border);
+  padding: 80px 0;
+}
+.dentica-about__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.dentica-about__quote {
+  font-family: var(--dentica-font-serif);
+  font-size: 26px;
+  line-height: 1.4;
+  color: var(--dentica-slate);
+  font-style: italic;
+  margin: 0 0 20px;
+}
+
+/* CTA Banner */
+.dentica-cta-box {
+  background: var(--dentica-slate);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 60px 40px;
+  text-align: center;
+  margin: 40px 0 80px;
+}
+.dentica-cta-box__title {
+  font-family: var(--dentica-font-serif);
+  font-size: 36px;
+  margin: 0 0 16px;
+}
+.dentica-cta-box__desc {
+  color: #cbd5e1;
+  font-size: 16px;
+  max-width: 520px;
+  margin: 0 auto 30px;
+}
+
+/* Footer */
+.dentica-footer {
+  background: #ffffff;
+  border-top: 1px solid var(--dentica-border);
+  padding: 40px 0 30px;
+  font-size: 13px;
+  color: var(--dentica-muted);
+}
+.dentica-footer__grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .dentica-hero__title { font-size: 32px; }
+  .dentica-about__grid { grid-template-columns: 1fr; gap: 30px; }
+  .dentica-cta-box { padding: 40px 20px; }
+}
