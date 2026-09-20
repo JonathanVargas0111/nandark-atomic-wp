@@ -35,9 +35,10 @@ jobs:
           fi
 
           # source=main: instala lo último de la rama, sin exigir un GitHub Release.
+          # force=true: fuerza reinstalación inmediata ignorando la caché CDN de raw.githubusercontent
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             -H "Authorization: Bearer $DEPLOY_TOKEN" \
-            "$SITE/wp-json/nandark/v1/self-update?source=main")
+            "$SITE/wp-json/nandark/v1/self-update?source=main&force=true")
 
           HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
           BODY=$(echo "$RESPONSE" | sed '$d')

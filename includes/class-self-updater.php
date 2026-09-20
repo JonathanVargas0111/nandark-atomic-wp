@@ -325,7 +325,7 @@ class Self_Updater {
      * @return string|null Versión, o null si no se pudo leer.
      */
     private static function get_main_branch_version() {
-        $url = 'https://raw.githubusercontent.com/' . self::GITHUB_REPO . '/main/nandark-atomic-core.php';
+        $url = 'https://raw.githubusercontent.com/' . self::GITHUB_REPO . '/main/nandark-atomic-core.php?cb=' . time();
 
         $args = [
             'timeout' => 10,
