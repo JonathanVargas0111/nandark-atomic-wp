@@ -29,9 +29,6 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--origen-bg) !important;
-  color: var(--origen-text-main);
-  font-family: var(--origen-font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -40,7 +37,9 @@ body {
 #header, #footer, #headerimg,
 header.wp-block-template-part,
 .site-header,
-.wp-site-blocks > header:first-child {
+.wp-site-blocks > header:first-child,
+#page > hr,
+body > hr {
   display: none !important;
 }
 

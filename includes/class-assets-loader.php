@@ -20,6 +20,15 @@ class Assets_Loader {
 
         wp_enqueue_style('nandark-atomic-core');
 
+        if (file_exists(NANDARK_ATOMIC_PATH . 'assets/css/dentica.css')) {
+            wp_enqueue_style(
+                'dentica-demo-style',
+                NANDARK_ATOMIC_URL . 'assets/css/dentica.css',
+                ['nandark-atomic-core'],
+                NANDARK_ATOMIC_VERSION
+            );
+        }
+
         // Si el Tema activo tiene un archivo style.css o theme.css, encolarlo automáticamente como capa superior (Skin)
         if (file_exists(get_stylesheet_directory() . '/style.css')) {
             wp_enqueue_style('nandark-theme-skin', get_stylesheet_uri(), ['nandark-atomic-core'], wp_get_theme()->get('Version'));

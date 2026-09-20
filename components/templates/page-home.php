@@ -4,14 +4,6 @@
  * Arquitectura 100% Atómica y Modular
  */
 get_header();
-
-// Encolar estilos específicos de la demo dental
-wp_enqueue_style(
-    'dentica-demo-style',
-    NANDARK_ATOMIC_URL . 'assets/css/dentica.css',
-    [],
-    NANDARK_ATOMIC_VERSION
-);
 ?>
 
 <div class="dentica-wrapper">
